@@ -1,0 +1,43 @@
+#!/bin/bash
+
+echo "[/] Starting..."
+
+fin up > /dev/null 2>&1
+fin restart > /dev/null 2>&1
+docker ps
+
+read -p "[?] Enter mariadb docker ID: " MID
+
+echo "[/] Copying database dump into docker..."
+sleep 1
+echo "..."
+sleep 1
+echo "..."
+sleep 2
+docker cp dbdump/dump.sql $MID:/tmp/dump.sql > /dev/null 2>&1
+echo "[\\] Database dump copied!"
+sleep 1
+echo "[/] Importing dump..."
+sleep 1
+echo "..."
+sleep 1
+echo "..."
+sleep 2
+docker exec -it $MID bash -c "mariadb -u user -puser default < /tmp/dump.sql" > /dev/null 2>&1
+echo "[\\] Dump imported!"
+sleep 1
+echo "[/] Importing config..."
+sleep 1
+echo "..."
+sleep 2
+fin drush cim -y
+echo "[\\] Config imported!"
+sleep 1
+echo "[/] Clearing cache..."
+sleep 1
+echo "..."
+sleep 2
+fin drush cr > /dev/null 2>&1
+echo "[\\] Cache cleared!"
+sleep 1
+echo "[✓] Project is ready!"
