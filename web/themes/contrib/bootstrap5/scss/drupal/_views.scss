@@ -1,0 +1,53 @@
+.views-admin {
+  a {
+    color: $link-color;
+    text-decoration: $link-decoration;
+    &:hover {
+      color: $link-hover-color;
+    }
+  }
+
+  .views-displays {
+    .tabs {
+      list-style: none;
+    }
+  }
+
+  .views-ui-display-tab-bucket__title {
+    padding: 4px 6px 6px;
+  }
+
+  .dropbutton {
+    .dropbutton-action {
+      > * {
+        line-height: 20px;
+        padding: 0.1em 0.5em;
+      }
+
+      .btn-primary {
+        color: $link-color;
+        text-decoration: $link-decoration;
+
+        &:hover {
+          color: $link-hover-color;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  .view-preview-form {
+    .form-item-view-args,
+    .form-actions {
+      display: block;
+      margin-left: $spacer;
+      margin-right: $spacer;
+    }
+  }
+}
+
+.pagination {
+  flex-wrap: wrap;
+  padding: $spacer 0;
+  justify-content: center;
+}

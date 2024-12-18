@@ -1,0 +1,108 @@
+.form-control {
+  &.image-button {
+    width: unset;
+  }
+
+  &.form-checkbox,
+  &.form-radio {
+    display: inline-block;
+    height: auto;
+    width: unset;
+  }
+}
+
+.form-select {
+  min-width: 5rem;
+}
+
+input {
+  &[type='search'] {
+    box-sizing: border-box;
+  }
+}
+
+.dropbutton-multiple {
+  .dropbutton {
+    .dropbutton-action {
+      > * {
+        border: 0;
+      }
+    }
+  }
+}
+
+.node-form {
+  @include media-breakpoint-up(lg) {
+    margin: 2 * $spacer;
+  }
+
+  .form-actions {
+    text-align: center;
+  }
+}
+
+.container-inline {
+  div,
+  label {
+    display: inline-block;
+    margin: 0;
+  }
+
+  // Webform issue: https://www.drupal.org/project/bootstrap5/issues/3306709
+  &.webform-multiple-add {
+    > .form-item {
+      > * {
+        display: inline-block;
+        width: unset;
+      }
+    }
+  }
+}
+
+td {
+  >.form-item {
+    margin: 0;
+  }
+}
+
+#search-block-form {
+  display: flex;
+}
+
+.js {
+  td {
+    .dropbutton-wrapper {
+      min-height: 2.25rem;
+    }
+  }
+}
+
+.dropbutton-widget {
+  background-color: $white;
+
+  @include border-radius($form-select-border-radius, 0);
+  @include box-shadow($form-select-box-shadow);
+
+  .dropbutton {
+    .dropbutton-action > * {
+      padding: $form-select-padding-y $form-select-padding-x;
+    }
+  }
+}
+
+.webform-dropbutton {
+  .dropbutton-wrapper {
+    .dropbutton-widget {
+      background-color: $white;
+    }
+  }
+}
+
+.system-file-system-settings {
+  .form-item {
+    label {
+      display: table;
+      font-weight: $font-weight-bold;
+    }
+  }
+}

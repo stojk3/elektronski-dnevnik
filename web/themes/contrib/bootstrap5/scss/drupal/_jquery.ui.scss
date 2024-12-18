@@ -1,0 +1,18 @@
+.ui-widget-content {
+  a {
+    color: $link-color;
+    text-decoration: $link-decoration;
+
+    &:hover {
+      color: $link-hover-color;
+      text-decoration: $link-hover-decoration;
+    }
+  }
+}
+
+.ui-dialog {
+  .ui-dialog-titlebar-close {
+    @extend .btn-close;
+  }
+}
+

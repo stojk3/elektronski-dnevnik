@@ -1,0 +1,18 @@
+// Admin interface fixes.
+.ckeditor-buttons {
+  li {
+    .cke-icon-only {
+      width: auto;
+    }
+
+    a {
+      min-height: 28px;
+    }
+  }
+
+  .cke_button_icon {
+    img {
+      vertical-align: initial;
+    }
+  }
+}

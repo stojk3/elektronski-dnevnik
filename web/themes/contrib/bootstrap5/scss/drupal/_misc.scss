@@ -1,0 +1,17 @@
+em {
+  &.placeholder {
+    display: unset;
+    min-height: unset;
+    vertical-align: unset;
+    cursor: unset;
+    background-color: unset;
+    opacity: unset;
+  }
+}
+
+.card-img-top {
+  img {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

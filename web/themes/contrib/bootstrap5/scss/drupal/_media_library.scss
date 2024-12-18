@@ -1,0 +1,166 @@
+
+  .media-library-item__edit,
+  .media-library-item__remove {
+    position: absolute;
+    z-index: 1;
+    top: 0.6rem;
+    overflow: hidden;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0.3125rem;
+    padding: 0;
+    transition: 0.2s border-color;
+    color: transparent;
+    background-size: 0.75rem;
+    text-shadow: none;
+    font-size: 0;
+    border: $form-check-input-border;
+    @include border-radius($form-check-input-border-radius);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 0.75rem;
+  }
+
+  .media-library-item__edit {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3e%3cg fill='%23545560'%3e%3cpath d='M14.545 3.042l-1.586-1.585a1.003 1.003 0 00-1.414 0L10.252 2.75l3 3 1.293-1.293a1.004 1.004 0 000-1.415zM5.25 13.751l-3-3 6.998-6.998 3 3zM.908 14.775c-.087.262.055.397.316.312l2.001-.667-1.65-1.646-.667 2.001z'/%3e%3c/g%3e%3c/svg%3e");
+    right: 3 * $spacer;
+  }
+
+  .media-library-item__remove {
+    background-image: url("data:image/svg+xml,%3csvg width='16' height='16' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M2.344 2.343l11.313 11.313M2.344 13.657L13.657 2.343' stroke='%2355565B' stroke-width='3'/%3e%3c/svg%3e");
+    right: $spacer;
+  }
+
+// admin/content/media
+.view-media-library {
+  .media-library-views-form {
+    @include make-row(0);
+    position: relative;
+
+    .form-actions,
+    .form-wrapper,
+    .media-library-select-all {
+      @include make-col(12);
+      margin: $spacer 0;
+
+      .form-checkbox {
+        margin-right: $form-check-inline-margin-end;
+      }
+    }
+
+    .media-library-item--grid {
+      position: relative;
+
+      @include make-col(12);
+
+      @include media-breakpoint-up(md) {
+        @include make-col(6);
+      }
+
+      @include media-breakpoint-up(lg) {
+        @include make-col(3);
+      }
+
+
+      .views-field-media-library-select-form,
+      .views-field-media-bulk-form {
+        @extend .card-header;
+
+        position: absolute;
+        z-index: 1;
+        top: .5 * $spacer;
+        left: .5 * $spacer;
+        right: .5 * $spacer;
+
+        .form-item {
+          margin: 0;
+        }
+      }
+
+      .views-field-rendered-entity {
+        @extend .card;
+        @extend .card-body;
+
+        height: calc(100% - $spacer);
+        padding-top: 3 * $spacer;
+        margin: .5 * $spacer;
+      }
+    }
+  }
+}
+
+// media browser
+.media-library-view--widget {
+  display: flex;
+  flex-direction: column;
+
+  .view-header {
+    @extend .nav;
+    @extend .nav-tabs;
+
+    a {
+      @extend .nav-link;
+      &.is-active {
+        @extend .active;
+      }
+    }
+  }
+}
+.media-library-view--widget,
+.view-media-library {
+  .view-filters {
+    .form--inline {
+      @include make-row(0);
+      align-items: flex-end;
+
+      > div {
+        @include make-col(12);
+        @include media-breakpoint-up(md) {
+          @include make-col-auto;
+          margin-bottom: $spacer;
+        }
+      }
+    }
+  }
+}
+
+// media library selection on a field
+.media-library-selection {
+  @include make-row(0);
+
+  .media-library-item {
+    &.media-library-item--grid {
+      position: relative;
+
+      @include make-col(12);
+
+      @include media-breakpoint-up(md) {
+        @include make-col(6);
+        width: calc(50% - $spacer);
+      }
+
+      @include media-breakpoint-up(lg) {
+        @include make-col(3);
+        width: calc(25% - $spacer);
+      }
+
+      @extend .card;
+      padding-top: 3 * $spacer;
+      margin: .5 * $spacer;
+
+      > div,
+      article {
+        @extend .card-body;
+      }
+    }
+  }
+}
+
+// add new media modal widget
+#media-library-add-form-wrapper {
+  .item-list {
+    ul {
+      @include list-unstyled();
+    }
+  }
+}

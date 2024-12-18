@@ -7,3 +7,15 @@ definitions:
     weight: 0
     expanded: false
     enabled: true
+  node__add_page:
+    enabled: false
+    menu_name: tools
+    parent: ''
+    expanded: false
+    weight: 0
+  user__page:
+    enabled: false
+    menu_name: account
+    parent: ''
+    expanded: false
+    weight: 2

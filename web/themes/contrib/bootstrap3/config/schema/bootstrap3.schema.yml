@@ -1,0 +1,5 @@
+# Schema for the theme setting configuration file of the Bootstrap 3 base theme.
+
+bootstrap3.settings:
+  type: theme_settings
+  label: 'Bootstrap 3 settings'

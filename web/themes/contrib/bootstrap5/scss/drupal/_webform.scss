@@ -1,0 +1,22 @@
+.form-wrapper.accordion {
+  .accordion-item {
+    @extend .my-3;
+
+    h2 {
+      @extend h6;
+    }
+  }
+}
+
+.form-type-datetime {
+  label {
+    display: block;
+  }
+
+  &.webform-element--title-inline,
+  &[class$="-title-after"] {
+    label {
+      display: inline-block;
+    }
+  }
+}

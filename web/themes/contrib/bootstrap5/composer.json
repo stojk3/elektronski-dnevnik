@@ -1,0 +1,18 @@
+{
+  "name": "drupal/bootstrap5",
+  "description": "Master theme using Bootstrap 5: powerful front-end framework for faster and easier web development.",
+  "type": "drupal-theme",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/bootstrap5",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Vladimir Roudakov (vladimiraus)",
+      "homepage": "https://www.drupal.org/u/vladimiraus",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/bootstrap5"
+  }
+}

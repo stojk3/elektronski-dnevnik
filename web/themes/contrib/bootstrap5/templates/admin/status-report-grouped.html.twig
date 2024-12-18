@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Theme override of grouped status report requirements.
+ *
+ * - grouped_requirements: Contains grouped requirements.
+ *   Each group contains:
+ *   - title: The title of the group.
+ *   - type: The severity of the group.
+ *   - items: The requirement instances.
+ *     Each requirement item contains:
+ *     - title: The title of the requirement.
+ *     - value: (optional) The requirement's status.
+ *     - description: (optional) The requirement's description.
+ *     - severity_title: The title of the severity.
+ *     - severity_status: Indicates the severity status.
+ */
+#}
+{{ attach_library('core/drupal.collapse') }}
+
+<div>
+  {% for group in grouped_requirements %}
+  {%
+    set status = group.type == 'checked' ? 'success' : (group.type == 'error' ? 'danger' : 'warning')
+  %}
+  <h3 id="{{ group.type }}" class="text-{{ status }}">{{ group.title }}</h3>
+  <div class="table-responsive">
+  <table class="table table-striped">
+   <thead>
+      <tr>
+        <td>Title</td>
+        <td>Details</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for requirement in group.items %}
+      <tr>
+        <td>{{ requirement.title }}</td>
+        <td>
+          {{ requirement.value }}
+          {% if requirement.description %}
+            <div class="description">{{ requirement.description }}</div>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+<div>

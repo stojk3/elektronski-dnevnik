@@ -1,0 +1,98 @@
+button {
+  &.link {
+    @extend .btn;
+    @extend .btn-link;
+    color: $link-color;
+  }
+}
+
+.button {
+    @extend .btn;
+}
+
+.button--small {
+  @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
+}
+
+a {
+  &.button {
+    @extend .btn;
+    text-decoration: none;
+
+    &.button--primary {
+      @include button-variant($primary, $primary);
+    }
+
+    &.button--danger {
+      @include button-variant($danger, $danger);
+    }
+
+    &.button-action {
+      @include button-variant($info, $info);
+    }
+
+    &.button--small {
+      @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
+    }
+  }
+}
+
+// @todo - all div a should be updated in b5 theme for drupal
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+    a {
+      color: color-contrast($value);
+
+      &:hover {
+        color: color-contrast($value);
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .btn-outline-#{$color} {
+    &:hover {
+      a {
+        color: color-contrast($value);
+      }
+    }
+
+    a {
+      &:hover {
+        color: color-contrast($value);
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+// Override: '@classy/css/components/button.css'
+
+.btn,
+.button {
+  margin: 0 $spacer * .5;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.btn-group {
+  .btn,
+  .button {
+    margin: 0;
+  }
+}
+
+// If link has ONLY button class, make it a light button.
+a {
+  &[class="button"] {
+      @include button-variant($light, $light);
+  }
+}

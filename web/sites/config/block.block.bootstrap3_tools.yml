@@ -1,0 +1,27 @@
+uuid: 4698543c-e28f-4981-a66b-32fba480de38
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.tools
+  module:
+    - system
+  theme:
+    - bootstrap3
+_core:
+  default_config_hash: vDeDvaPv1MUpZGC52YwOgv9Me-fZetTMHrU-xfImz2E
+id: bootstrap3_tools
+theme: bootstrap3
+region: sidebar_second
+weight: 0
+provider: null
+plugin: 'system_menu_block:tools'
+settings:
+  id: 'system_menu_block:tools'
+  label: Tools
+  label_display: visible
+  provider: system
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility: {  }

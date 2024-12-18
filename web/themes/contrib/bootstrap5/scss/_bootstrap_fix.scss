@@ -1,0 +1,12 @@
+// Bootstrap fixes
+// @TODO: update .close style to be .btn-close
+// @see: https://getbootstrap.com/docs/5.2/components/alerts/#dismissing
+.alert-dismissible {
+  .close {
+    color: $black;
+  }
+}
+
+code {
+  overflow-y: auto;
+}

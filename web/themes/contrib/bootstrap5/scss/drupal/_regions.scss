@@ -1,0 +1,17 @@
+.region-title__action {
+  a {
+    &.button {
+      @include button-variant($primary, $primary);
+    }
+  }
+}
+
+tr {
+  &.region-title {
+    --#{$variable-prefix}table-bg: #{$light};
+
+    td {
+      --#{$variable-prefix}table-bg: #{$light};
+    }
+  }
+}

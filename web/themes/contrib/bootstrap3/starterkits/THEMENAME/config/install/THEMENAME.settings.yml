@@ -1,0 +1,19 @@
+# Default settings should not be located here. This file is only used to
+# install initial setting values. If your theme is the one that introduces a
+# new theme setting, it should use the Drupal Bootstrap base theme's
+# @BootstrapSetting annotation discovery process. This ensures that sub-theme
+# settings are inherited from base themes themes properly and to determine when
+# a setting should be saved to config as "overridden".
+#
+# @see \Drupal\bootstrap3\Plugin\SettingBase
+# @see \Drupal\bootstrap3\Plugin\SettingInterface
+# @see \Drupal\bootstrap3\Plugin\SettingManager
+# @see \Drupal\bootstrap3\Plugin\Form\SystemThemeSettings
+# @see \Drupal\bootstrap3\ThemeSettings
+
+# This file cannot be empty, so install an initial empty array for "schemas".
+# @see https://www.drupal.org/node/2813829
+schemas: []
+
+# Disable the CDN provider so compiled source files can be used.
+#cdn_provider: ''

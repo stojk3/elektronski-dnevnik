@@ -1,0 +1,15 @@
+a {
+  &.tabledrag-handle {
+    .handle {
+      height: 1.7em;
+      display: table-cell;
+      padding-right: $spacer !important; // sass-lint:disable-line no-important
+    }
+  }
+}
+
+// Bootstrap reboots table caption to bottom, but it's controlled in twig.
+// Revert reboot.
+table {
+  caption-side: unset;
+}
