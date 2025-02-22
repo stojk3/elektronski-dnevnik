@@ -1,6 +1,0 @@
-name: 'Elektronski Dnevnik Modul'
-type: module
-description: 'A custom module for Drupal in Docksal.'
-core_version_requirement: ^8 || ^9 || ^10
-package: Custom
-dependencies: []

@@ -1,0 +1,7 @@
+elektronski_dnevnik.login:
+  path: '/user-login'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\UserLoginForm'
+    _title: 'User Login'
+  requirements:
+    _permission: 'access content'
