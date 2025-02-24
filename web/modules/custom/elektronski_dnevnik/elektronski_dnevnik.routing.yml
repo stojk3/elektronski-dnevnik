@@ -5,3 +5,27 @@ elektronski_dnevnik.login:
     _title: 'User Login'
   requirements:
     _permission: 'access content'
+
+elektronski_dnevnik.student_register:
+  path: '/student-register'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\StudentRegisterForm'
+    _title: 'Student Register'
+  requirements:
+    _permission: 'access content'
+
+elektronski_dnevnik.teacher_register:
+  path: '/teacher-register'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\TeacherRegisterForm'
+    _title: 'Teacher Register'
+  requirements:
+    _permission: 'access content'
+
+elektronski_dnevnik.department_register:
+  path: '/department-register'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\DepartmentRegisterForm'
+    _title: 'Department Register'
+  requirements:
+    _permission: 'access content'

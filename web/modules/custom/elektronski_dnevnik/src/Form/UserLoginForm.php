@@ -9,16 +9,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class UserLoginForm extends FormBase {
 
-  /**
-   * ID forme
-   */
   public function getFormId() {
     return 'elektronski_dnevnik_login_form';
   }
 
-  /**
-   * Build Form
-   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['username'] = [
       '#type' => 'textfield',
@@ -40,9 +34,6 @@ class UserLoginForm extends FormBase {
     return $form;
   }
 
-  /**
-   * Submit handler
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $username = $form_state->getValue('username');
     $password = $form_state->getValue('password');
