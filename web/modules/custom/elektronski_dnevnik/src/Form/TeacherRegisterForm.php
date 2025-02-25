@@ -95,6 +95,8 @@ class TeacherRegisterForm extends FormBase {
         ->execute();
 
       \Drupal::messenger()->addMessage('Uspešno ste registrovali profesora!', MessengerInterface::TYPE_STATUS);
+      \Drupal::logger('elektronski_dnevnik')->notice('Form state values: ' . print_r($form_state->getValues(), TRUE));
+
 
     } catch (\Exception $e) {
       \Drupal::messenger()->addMessage('Greška pri registraciji: ' . $e->getMessage(), MessengerInterface::TYPE_ERROR);

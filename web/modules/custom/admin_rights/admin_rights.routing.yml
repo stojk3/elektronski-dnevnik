@@ -1,0 +1,7 @@
+admin_rights.assign_admin:
+  path: '/admin/assign-admin'
+  defaults:
+    _form: '\Drupal\admin_rights\Form\AssignAdminForm'
+    _title: 'Assign Admin Rights to Teacher'
+  requirements:
+    _permission: 'administer site configuration'

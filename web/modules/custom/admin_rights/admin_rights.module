@@ -1,0 +1,39 @@
+<?php
+
+use Drupal\user\Entity\User;
+use Drupal\Core\Messenger\MessengerInterface;
+
+/**
+ * Function to create a user from the teacher and assign admin rights.
+ */
+function create_and_assign_admin_from_teacher($teacher_id) {
+  // Get teacher data from your custom table (teachers).
+  $connection = \Drupal::database();
+  $query = $connection->select('teachers', 't')
+    ->fields('t', ['id', 'ime', 'prezime', 'email', 'username', 'sifra'])
+    ->condition('id', $teacher_id)
+    ->execute();
+  
+  $teacher = $query->fetchObject();
+
+  if ($teacher) {
+    // Create the user.
+    $user = User::create([
+      'name' => $teacher->username,
+      'mail' => $teacher->email,
+      'pass' => $teacher->sifra,  // Set the password using the teacher's 'sifra'.
+      'status' => 1,  // Set the user as active.
+      'roles' => ['administrator'],  // Assign admin role.
+    ]);
+
+    // Save the user.
+    $user->save();
+    
+    // Optionally, you can display a success message.
+    \Drupal::messenger()->addMessage(t('Admin rights assigned to teacher with ID %id.', ['%id' => $teacher_id]), MessengerInterface::TYPE_STATUS);
+  }
+  else {
+    // Handle case when no teacher with that ID is found.
+    \Drupal::messenger()->addMessage(t('No teacher found with ID %id.', ['%id' => $teacher_id]), MessengerInterface::TYPE_ERROR);
+  }
+}

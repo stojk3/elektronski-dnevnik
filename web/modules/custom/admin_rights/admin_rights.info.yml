@@ -1,0 +1,7 @@
+name: 'Teacher Admin'
+type: module
+description: 'Assigns admin rights to teachers from the teachers table.'
+core_version_requirement: ^8 || ^9 || ^10
+package: Custom
+dependencies:
+  - drupal:user

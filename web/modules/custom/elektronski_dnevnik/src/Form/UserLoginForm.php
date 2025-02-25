@@ -20,7 +20,7 @@ class UserLoginForm extends FormBase {
       '#required' => TRUE,
     ];
 
-    $form['password'] = [
+    $form['sifra'] = [
       '#type' => 'password',
       '#title' => $this->t('Password'),
       '#required' => TRUE,
@@ -36,7 +36,7 @@ class UserLoginForm extends FormBase {
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $username = $form_state->getValue('username');
-    $password = $form_state->getValue('password');
+    $password = $form_state->getValue('sifra');
 
     $connection = Database::getConnection();
     $tables = ['teachers', 'students'];
@@ -45,7 +45,7 @@ class UserLoginForm extends FormBase {
       $query = $connection->select($table, 'u')
         ->fields('u', ['id'])
         ->condition('username', $username)
-        ->condition('password', $password)
+        ->condition('sifra', $password)
         ->execute()
         ->fetchField();
 

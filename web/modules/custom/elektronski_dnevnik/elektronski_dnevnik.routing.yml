@@ -29,3 +29,19 @@ elektronski_dnevnik.department_register:
     _title: 'Department Register'
   requirements:
     _permission: 'access content'
+
+elektronski_dnevnik.assign_student:
+  path: '/assign-student'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\AssignStudentForm'
+    _title: 'Assign Student'
+  requirements:
+    _permission: 'access content'
+
+elektronski_dnevnik.assign_teacher:
+  path: '/assign-teacher'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\AssignTeacherForm'
+    _title: 'Assign Teacher'
+  requirements:
+    _permission: 'access content'
