@@ -4,15 +4,22 @@ namespace Drupal\elektronski_dnevnik\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\user\Entity\User;
 use Drupal\Core\Database\Database;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class UserLoginForm extends FormBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'elektronski_dnevnik_login_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['username'] = [
       '#type' => 'textfield',
@@ -20,7 +27,7 @@ class UserLoginForm extends FormBase {
       '#required' => TRUE,
     ];
 
-    $form['sifra'] = [
+    $form['password'] = [
       '#type' => 'password',
       '#title' => $this->t('Password'),
       '#required' => TRUE,
@@ -34,29 +41,46 @@ class UserLoginForm extends FormBase {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $username = $form_state->getValue('username');
-    $password = $form_state->getValue('sifra');
+    $password = $form_state->getValue('password');
+
+    $user = user_load_by_name($username);
+    if ($user) {
+      $auth = \Drupal::service('user.auth');
+      if ($auth->authenticate($username, $password)) {
+        user_login_finalize($user);
+        $this->messenger()->addStatus($this->t('Login successful.'));
+        $form_state->setRedirect('<front>');
+        return;
+      } else {
+        $this->messenger()->addError($this->t('Invalid password.'));
+        return;
+      }
+    }
 
     $connection = Database::getConnection();
-    $tables = ['teachers', 'students'];
+    $tables = ['students', 'teachers'];
 
     foreach ($tables as $table) {
       $query = $connection->select($table, 'u')
-        ->fields('u', ['id'])
+        ->fields('u', ['id', 'sifra'])
         ->condition('username', $username)
-        ->condition('sifra', $password)
         ->execute()
-        ->fetchField();
+        ->fetchAssoc();
 
-      if ($query) {
+        if ($query && $password === $query['sifra']) {
         \Drupal::messenger()->addMessage($this->t('Login successful!'));
-        $response = new RedirectResponse('/pocetna'); 
+
+        $response = new RedirectResponse('/pocetna');
         $response->send();
         return;
       }
     }
 
-    \Drupal::messenger()->addError($this->t('Invalid username or password.'));
+    $this->messenger()->addError($this->t('Invalid username or password.'));
   }
 }

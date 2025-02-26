@@ -6,6 +6,13 @@ elektronski_dnevnik.login:
   requirements:
     _permission: 'access content'
 
+elektronski_dnevnik.logout:
+  path: '/user-logout'
+  defaults:
+    _controller: '\Drupal\user\Controller\UserController::logout'
+  requirements:
+    _permission: 'access content'
+
 elektronski_dnevnik.student_register:
   path: '/student-register'
   defaults:
