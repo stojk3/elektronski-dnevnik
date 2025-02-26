@@ -6,20 +6,13 @@ elektronski_dnevnik.login:
   requirements:
     _permission: 'access content'
 
-elektronski_dnevnik.logout:
-  path: '/user-logout'
-  defaults:
-    _controller: '\Drupal\user\Controller\UserController::logout'
-  requirements:
-    _permission: 'access content'
-
 elektronski_dnevnik.student_register:
   path: '/student-register'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentRegisterForm'
     _title: 'Student Register'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
 
 elektronski_dnevnik.teacher_register:
   path: '/teacher-register'
@@ -27,7 +20,7 @@ elektronski_dnevnik.teacher_register:
     _form: '\Drupal\elektronski_dnevnik\Form\TeacherRegisterForm'
     _title: 'Teacher Register'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
 
 elektronski_dnevnik.department_register:
   path: '/department-register'
@@ -35,7 +28,7 @@ elektronski_dnevnik.department_register:
     _form: '\Drupal\elektronski_dnevnik\Form\DepartmentRegisterForm'
     _title: 'Department Register'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
 
 elektronski_dnevnik.assign_student:
   path: '/assign-student'
@@ -43,7 +36,7 @@ elektronski_dnevnik.assign_student:
     _form: '\Drupal\elektronski_dnevnik\Form\AssignStudentForm'
     _title: 'Assign Student'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
 
 elektronski_dnevnik.assign_teacher:
   path: '/assign-teacher'
@@ -51,4 +44,4 @@ elektronski_dnevnik.assign_teacher:
     _form: '\Drupal\elektronski_dnevnik\Form\AssignTeacherForm'
     _title: 'Assign Teacher'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'

@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * Implements hook_menu_links_discovered_alter().
+ * Modify the menu links based on user login status.
+ */
+function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
+  $current_user = \Drupal::currentUser();
+
+  if ($current_user->isAuthenticated()) {
+    // User is logged in, add a Logout link.
+    $links['elektronski_dnevnik.logout_link'] = [
+      'title' => t('Logout'),
+      'route_name' => 'user.logout',
+      'menu_name' => 'main-menu',
+      'weight' => 0,
+    ];
+    if (isset($links['elektronski_dnevnik.custom_login_link'])) {
+      unset($links['elektronski_dnevnik.custom_login_link']);
+    }
+  }
+  else {
+    // User is not logged in, show the Login link.
+    $links['elektronski_dnevnik.custom_login_link'] = [
+      'title' => t('Login'),
+      'route_name' => 'elektronski_dnevnik.login',
+      'menu_name' => 'main-menu',
+      'weight' => 0,
+    ];
+    if (isset($links['elektronski_dnevnik.logout_link'])) {
+      unset($links['elektronski_dnevnik.logout_link']);
+    }
+  }
+}
+
+
