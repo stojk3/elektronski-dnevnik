@@ -70,7 +70,6 @@ class StudentRegisterForm extends FormBase {
     $connection = Database::getConnection();
 
     try {
-      // Dodavanje u students tabelu
       $connection->insert('students')
         ->fields([
           'ime' => $form_state->getValue('ime'),
@@ -83,7 +82,6 @@ class StudentRegisterForm extends FormBase {
         ])
         ->execute();
 
-      // Dodavanje u Drupal users_field_data
       $user = User::create();
       $user->setUsername($form_state->getValue('username'));
       $user->setEmail($form_state->getValue('email'));
