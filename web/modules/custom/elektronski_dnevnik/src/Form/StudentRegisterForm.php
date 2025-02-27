@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\user\Entity\User;
 
 class StudentRegisterForm extends FormBase {
 
@@ -69,6 +70,7 @@ class StudentRegisterForm extends FormBase {
     $connection = Database::getConnection();
 
     try {
+      // Dodavanje u students tabelu
       $connection->insert('students')
         ->fields([
           'ime' => $form_state->getValue('ime'),
@@ -80,6 +82,15 @@ class StudentRegisterForm extends FormBase {
           'generacija' => $form_state->getValue('generacija'),
         ])
         ->execute();
+
+      // Dodavanje u Drupal users_field_data
+      $user = User::create();
+      $user->setUsername($form_state->getValue('username'));
+      $user->setEmail($form_state->getValue('email'));
+      $user->setPassword($form_state->getValue('sifra'));
+      $user->addRole('student');
+      $user->activate();
+      $user->save();
 
       \Drupal::messenger()->addMessage('Uspešno ste registrovali učenika!', MessengerInterface::TYPE_STATUS);
 

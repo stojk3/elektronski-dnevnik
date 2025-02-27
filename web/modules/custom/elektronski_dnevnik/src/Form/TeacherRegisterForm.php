@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\user\Entity\User;
 
 class TeacherRegisterForm extends FormBase {
 
@@ -94,9 +95,16 @@ class TeacherRegisterForm extends FormBase {
         ])
         ->execute();
 
+      $user = User::create();
+      $user->setUsername($form_state->getValue('username'));
+      $user->setEmail($form_state->getValue('email'));
+      $user->setPassword($form_state->getValue('sifra'));
+      $user->addRole('teacher'); 
+      $user->activate();
+      $user->save();
+
       \Drupal::messenger()->addMessage('Uspešno ste registrovali profesora!', MessengerInterface::TYPE_STATUS);
       \Drupal::logger('elektronski_dnevnik')->notice('Form state values: ' . print_r($form_state->getValues(), TRUE));
-
 
     } catch (\Exception $e) {
       \Drupal::messenger()->addMessage('Greška pri registraciji: ' . $e->getMessage(), MessengerInterface::TYPE_ERROR);

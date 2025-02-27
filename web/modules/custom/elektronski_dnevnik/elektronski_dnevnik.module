@@ -32,5 +32,3 @@ function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
     }
   }
 }
-
-
