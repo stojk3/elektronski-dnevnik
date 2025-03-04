@@ -23,5 +23,8 @@ class StudentClassForm extends FormBase {
             'wrapper' => 'class-info-container',
         ],
     ];
+
+    $selected_date = $form_state->getValue('datum_upisa') ?? date('Y-m-d');
+    $week_number = $this->getWeekNumberFromDate($selected_date);
   }
 }
