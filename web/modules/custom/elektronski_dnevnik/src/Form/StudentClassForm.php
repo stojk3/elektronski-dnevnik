@@ -26,5 +26,25 @@ class StudentClassForm extends FormBase {
 
     $selected_date = $form_state->getValue('datum_upisa') ?? date('Y-m-d');
     $week_number = $this->getWeekNumberFromDate($selected_date);
+
+    $form['redni_broj_nedelje'] = [
+        '#type' => 'number',
+        '#title' => t('Redni broj nedelje'),
+        '#default_value' => $week_number,
+        '#required' => TRUE,
+        '#disabled' => TRUE,
+    ];
+
+    $avaliable_classes = $this->getAvaliableClassNumbers($selected_date);
+
+    $form['redni_broj_casa'] = [
+        '#type' => 'select',
+        '#title' => t('Redni broj časa'),
+        '#options' => $avaliable_classes,
+        '#required' => TRUE,
+    ];
+
+    $current_user = \Drupal::currentUser();
+    $connection = \Drupal::database();
   }
 }
