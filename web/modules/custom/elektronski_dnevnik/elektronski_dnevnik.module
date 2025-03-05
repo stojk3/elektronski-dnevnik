@@ -31,4 +31,27 @@ function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
       unset($links['elektronski_dnevnik.logout_link']);
     }
   }
+
+  /**
+   * Custom accsess callback to restrict accsess to the class form page.
+   */
+  function elektronski_dnevnik_class_form_accsess() {
+    $current_user = \Drupal::currentUser();
+    $connection = \Drupal::database();
+    $user_username = $current_user->getAccountName();
+
+    $query = $connection->select('teachers', 't')
+        ->condition('t.username', $user_username, '=')
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+
+    $exists = ($query > 0);
+
+    if ($exists) {
+      return AccsessResult::allowed();
+    } else {
+      return AccsessResult::forbidden();
+    }
+  }
 }
