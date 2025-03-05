@@ -128,6 +128,33 @@ class StudentClassForm extends FormBase {
     $selected_class = $form_state->getValue('odeljenje');
     $students = $this->loadStudentByClass($selected_class);
 
+    if (!empty($students)) {
+        $form['combined-container']['ucenici'] = [
+            '#type' => 'checkboxes',
+            '#title' => 'Ucenici',
+            '#options' => array_reduce($students, function ($carry, $student) {
+                $carry[$student->id] = $student->first_name . ' ' . $student->last_name;
+                return $carry;
+            }, []),
+        ];
+    } else {
+        $form['combined-container']['ucenici'] = [
+            '#markup' => t('Nema ucenika u @odeljenje', ['@odeljenje' => $selected_class]),
+        ];
+    }
+
+    $form['tema'] = [
+        '#type' => 'textarea',
+        '#title' => t('Tema'),
+        '#required' => TRUE,
+    ];
+
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = [
+        '#type' => 'submit',
+        '#value' => t('Snimi'),
+    ];
+
     return $form;
   }
 
@@ -136,4 +163,6 @@ class StudentClassForm extends FormBase {
     $date_diff = (strtotime($date) - strtotime($first_week_date)) / (60 *60 *24 * 7);
     return ceil($date_diff) + 1;
   }
+
+  
 }
