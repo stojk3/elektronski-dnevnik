@@ -45,3 +45,11 @@ elektronski_dnevnik.assign_teacher:
     _title: 'Assign Teacher'
   requirements:
     _permission: 'administer site configuration'
+
+elektronski_dnevnik.student_class:
+  path: '/class-form'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\StudentClassForm'
+    _title: 'Class Form'
+  requirements:
+    _permssion: ''
