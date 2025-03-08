@@ -126,7 +126,7 @@ class StudentClassForm extends FormBase {
     ];
 
     $selected_class = $form_state->getValue('odeljenje');
-    $students = $this->loadStudentByClass($selected_class);
+    $students = $this->loadStudentsByClass($selected_class);
 
     if (!empty($students)) {
         $form['combined-container']['ucenici'] = [
@@ -164,5 +164,107 @@ class StudentClassForm extends FormBase {
     return ceil($date_diff) + 1;
   }
 
+  protected function getAvailableClassNumbers($date) {
+    $connection = \Drupal::database();
+    $result = $connection->query("SELECT redni_broj_casa FROM {student_class} WHERE datum_upisa = :date", [
+      ':date' => $date,
+    ])->fetchCol();
+
+    $class_numbers = range(1, 7);
+    foreach ($result as $taken_class) {
+      unset($class_numbers[array_search($taken_class, $class_numbers)]);
+    }
+
+    return array_combine($class_numbers, $class_numbers);
+  }
+
+  protected function getTotalClassesForSubjectAndClass($subject, $class) {
+    $connection = \Drupal::database();
+    return $connection->query("SELECT COUNT(*) FROM {student_class} WHERE predmet_id = :subject AND department_id = :class", [
+      ':subject' => $subject,
+      ':class' => $class,
+    ])->fetchField();
+  }
   
+  protected function loadStudentsByClass($class) {
+    $connection = \Drupal::database();
+    $depId = $connection->query("SELECT id FROM {departments} WHERE ime LIKE :ime", [
+      ':ime' => $class
+    ])->fetchField();
+
+    return $connection->query("SELECT student_id FROM {students_departments} WHERE department_id = :department_id", [
+        ':department_id' => $depId
+    ])->fetchAll();
+  }
+
+  protected function getDepartmentIdByClass($class) {
+    $connection = \Drupal::database();
+    return $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
+        ':ime' => $class
+    ])->fetchField();
+  }
+
+  protected function getSubjectIdBySubject($subject) {
+    $connection = \Drupal::database();
+    return $connection->query("SELECT id FROM {subjects} WHERE ime = :ime", [
+        ':ime' => $subject
+    ])->fetchField();
+  }
+
+  protected function getTeacherIdByUsername($user_username) {
+    $connection = \Drupal::database();
+    return $connection->query("SELECT id FROM {teachers} WHERE username = :username", [
+        ':username' => $user_username
+    ])->FetchField();
+  }
+
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $connection = \Drupal::database();
+    $date = $form_state->getValue('datum_upisa');
+    $current_user = \Drupal::currentUser();
+    $user_username = $current_user->getAccountName();
+
+    $teacher_id = getTeacherIdByUsername($user_username);
+
+    $class = $form_state->getValue('odeljenje');
+    $depId = $this->getDepartmentIdByClass($class);
+
+    $subject = $form_state->getValue('predmet');
+    $subject_id = $this->getSubjectIdBySubject($subject);
+
+    $connection->insert('class_entries')
+      ->fields([
+        'tema' => $form_state->getValue('tema'),
+        'datum_upisa' => $date,
+        'ukupno_casova' => $form_state->getValue('ukupno_casova'),
+        'redni_broj_casa' => $form_state->getValue('redni_broj_casa'),
+        'department_id' => $depId,
+        'teacher_id' => $teacher_id,
+        'predmet_id' => $subject_id,
+      ])
+      ->execute();
+
+    foreach ($form_state->getValue('ucenici') as $student_id => $is_absent) {
+      if ($is_absent) {
+        $connection->insert('student_attendance')
+          ->fields([
+            'datum_upisa' => $date,
+            'redni_broj_casa' => $form_state->getValue('redni_broj_casa'),
+            'student_id' => $student_id,
+            'predmet_id' => $subject_id,
+          ])
+          ->execute();
+      }
+    }
+
+    \Drupal::messenger()->addMessage(t('Podaci o času i prisutnosti učenika su uspešno sačuvani.'));
+  }
+
+  public function updateWeekAndClasses(array &$form, FormStateInterface $form_state) {
+    return $form;
+  }
+
+  public function updateCombinedContainer(array &$form, FormStateInterface $form_state) {
+    return $form['combined_container'];
+  }
 }

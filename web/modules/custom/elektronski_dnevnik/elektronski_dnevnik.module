@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
+
 /**
  * Implements hook_menu_links_discovered_alter().
  * Modify the menu links based on user login status.
@@ -35,7 +38,7 @@ function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
   /**
    * Custom accsess callback to restrict accsess to the class form page.
    */
-  function elektronski_dnevnik_class_form_accsess() {
+  function elektronski_dnevnik_class_form_access() {
     $current_user = \Drupal::currentUser();
     $connection = \Drupal::database();
     $user_username = $current_user->getAccountName();
@@ -46,7 +49,7 @@ function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
         ->execute()
         ->fetchField();
 
-    $exists = ($query > 0);
+    $exists = !empty($query);
 
     if ($exists) {
       return AccsessResult::allowed();
