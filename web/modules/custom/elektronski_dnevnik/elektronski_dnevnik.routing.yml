@@ -52,4 +52,4 @@ elektronski_dnevnik.student_class:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentClassForm'
     _title: 'Class Form'
   requirements:
-    _permssion: 'elektronski_dnevnik_class_form_access'
+    _permission: 'elektronski_dnevnik_class_form_access'

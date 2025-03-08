@@ -36,25 +36,45 @@ function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
   }
 
   /**
-   * Custom accsess callback to restrict accsess to the class form page.
-   */
-  function elektronski_dnevnik_class_form_access() {
-    $current_user = \Drupal::currentUser();
-    $connection = \Drupal::database();
-    $user_username = $current_user->getAccountName();
-
-    $query = $connection->select('teachers', 't')
-        ->condition('t.username', $user_username, '=')
-        ->countQuery()
-        ->execute()
-        ->fetchField();
-
-    $exists = !empty($query);
-
-    if ($exists) {
-      return AccsessResult::allowed();
-    } else {
-      return AccsessResult::forbidden();
+ * Dodeljuje ulogu 'teacher' prilikom logovanja.
+ */
+function mymodule_user_login($account) {
+  // Proverava da li je korisnik logovan sa korisničkim imenom u 'teachers' tabeli
+  if (check_user_in_teachers_table($account->getAccountName())) {
+    // Dodeljuje ulogu 'teacher' korisniku
+    if (!$account->hasRole('teacher')) {
+      $account->addRole('teacher');  // Dodeljuje ulogu 'teacher' ako je nema
+      $account->save();  // Sprema promene u korisničkom nalogu
     }
   }
+}
+
+/**
+ * Uklanja ulogu 'teacher' prilikom odjavljivanja.
+ */
+function mymodule_user_logout($account) {
+  // Uklanja ulogu 'teacher' pri odjavi
+  if ($account->hasRole('teacher')) {
+    $account->removeRole('teacher');  // Uklanja ulogu 'teacher'
+    $account->save();  // Sprema promene u korisničkom nalogu
+  }
+}
+
+/**
+ * Funkcija koja proverava da li je korisničko ime u tabeli 'teachers'.
+ */
+function check_user_in_teachers_table($username) {
+  // Povezivanje sa bazom podataka
+  $connection = \Drupal::database();
+  
+  // Izvršavanje upita
+  $query = $connection->select('teachers', 't')
+                      ->fields('t', ['username'])
+                      ->condition('username', $username)
+                      ->execute();
+
+  // Ako postoji red sa tim korisničkim imenom, vraćamo TRUE, inače FALSE
+  return $query->rowCount() > 0;
+}
+
 }
