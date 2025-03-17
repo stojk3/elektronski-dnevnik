@@ -261,10 +261,14 @@ class StudentClassForm extends FormBase {
   }
 
   public function updateWeekAndClasses(array &$form, FormStateInterface $form_state) {
+    $selected_date = $form_state->getValue('datum_upisa') ?? date('Y-m-d');
+    $form['redni_broj_nedelje']['#default_value'] = $this->getWeekNumberFromDate($selected_date);
+    $form['redni_broj_casa']['#options'] = $this->getAvailableClassNumbers($selected_date);
+    
     return $form;
-  }
+}
 
   public function updateCombinedContainer(array &$form, FormStateInterface $form_state) {
-    return $form['combined_container'];
+    return $form['combined-container'];
   }
 }
