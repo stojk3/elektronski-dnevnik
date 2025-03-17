@@ -64,7 +64,7 @@ class StudentClassForm extends FormBase {
 
         $subjects = [];
         foreach ($subjects_query as $row) {
-            $subjects[$row->id] = $row->predmet;
+            $subjects[$row->id] = $row->ime;
         }
 
         $form['predmet'] = [
