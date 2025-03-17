@@ -119,7 +119,7 @@ class StudentClassForm extends FormBase {
 
     $form['combined-container']['ukupno_casova'] = [
         '#type' => 'number',
-        '#title' => 'Ukupno CHASOVA(zameni ovde sa ch)',
+        '#title' => 'Ukupan broj časova',
         '#default_value' => $total_classes,
         '#required' => TRUE,
         '#disabled' => TRUE,
