@@ -64,12 +64,12 @@ class StudentClassForm extends FormBase {
 
         $subjects = [];
         foreach ($subjects_query as $row) {
-            $subjects[$row->id] = t($row->predmet);
+            $subjects[$row->id] = $row->predmet;
         }
 
         $form['predmet'] = [
             '#type' => 'select',
-            '#title' => t('Predmet'),
+            '#title' => 'Predmet',
             '#options' => $subjects,
             '#required' => TRUE,
             '#ajax' => [
@@ -79,26 +79,26 @@ class StudentClassForm extends FormBase {
         ];
     } else {
         $form['message'] = [
-            '#markup' => t('Nema predmeta blablabla'),
+            '#markup' => 'Nema predmeta blablabla',
         ];
     }
 
     $form['odeljenje'] = [
         '#type' => 'select',
-        '#title' => t('Odeljenje'),
+        '#title' => 'Odeljenje',
         '#options' => [
-            'I1' => t('I1'),
-            'I2' => t('I2'),
-            'I3' => t('I3'),
-            'II1' => t('II1'),
-            'II2' => t('II2'),
-            'II3' => t('II3'),
-            'III1' => t('III1'),
-            'III2' => t('III2'),
-            'III3' => t('III3'),
-            'IV1' => t('IV1'),
-            'IV2' => t('IV2'),
-            'IV3' => t('IV3'),
+            'I1' => 'I1',
+            'I2' => 'I2',
+            'I3' => 'I3',
+            'II1' => 'II1',
+            'II2' => 'II2',
+            'II3' => 'II3',
+            'III1' => 'III1',
+            'III2' => 'III2',
+            'III3' => 'III3',
+            'IV1' => 'IV1',
+            'IV2' => 'IV2',
+            'IV3' => 'IV3',
         ],
         '#required' => TRUE,
         '#ajax' => [
@@ -119,7 +119,7 @@ class StudentClassForm extends FormBase {
 
     $form['combined-container']['ukupno_casova'] = [
         '#type' => 'number',
-        '#title' => t('Ukupno CHASOVA(zameni ovde sa ch)'),
+        '#title' => 'Ukupno CHASOVA(zameni ovde sa ch)',
         '#default_value' => $total_classes,
         '#required' => TRUE,
         '#disabled' => TRUE,
@@ -139,20 +139,20 @@ class StudentClassForm extends FormBase {
         ];
     } else {
         $form['combined-container']['ucenici'] = [
-            '#markup' => t('Nema ucenika u @odeljenje', ['@odeljenje' => $selected_class]),
+            '#markup' => 'Nema ucenika u @odeljenje', ['@odeljenje' => $selected_class],
         ];
     }
 
     $form['tema'] = [
         '#type' => 'textarea',
-        '#title' => t('Tema'),
+        '#title' => 'Tema',
         '#required' => TRUE,
     ];
 
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
         '#type' => 'submit',
-        '#value' => t('Snimi'),
+        '#value' => 'Snimi',
     ];
 
     return $form;
@@ -257,7 +257,7 @@ class StudentClassForm extends FormBase {
       }
     }
 
-    \Drupal::messenger()->addMessage(t('Podaci o času i prisutnosti učenika su uspešno sačuvani.'));
+    \Drupal::messenger()->addMessage('Podaci o času i prisutnosti učenika su uspešno sačuvani.');
   }
 
   public function updateWeekAndClasses(array &$form, FormStateInterface $form_state) {
