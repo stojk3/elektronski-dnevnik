@@ -222,9 +222,14 @@ class StudentClassForm extends FormBase {
     $connection = \Drupal::database();
     $date = $form_state->getValue('datum_upisa');
     $current_user = \Drupal::currentUser();
-    $user_username = $current_user->getAccountName();
+    $user_username = $current_user->getDisplayName();
 
-    $teacher_id = getTeacherIdByUsername($user_username);
+    $teacher_id = $this->getTeacherIdByUsername($user_username);
+    if (empty($teacher_id)) {
+        \Drupal::logger('custom_log')->error("Greška: Teacher ID nije pronađen za korisnika $user_username");
+        \Drupal::messenger()->addError("Greška: Ne mogu da pronađem teacher_id za korisnika $user_username.");
+    return;
+}
 
     $class = $form_state->getValue('odeljenje');
     $depId = $this->getDepartmentIdByClass($class);
@@ -232,7 +237,7 @@ class StudentClassForm extends FormBase {
     $subject = $form_state->getValue('predmet');
     $subject_id = $this->getSubjectIdBySubject($subject);
 
-    $connection->insert('class_entries')
+    $connection->insert('student_class')
       ->fields([
         'tema' => $form_state->getValue('tema'),
         'datum_upisa' => $date,
