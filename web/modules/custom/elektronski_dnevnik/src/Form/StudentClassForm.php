@@ -206,9 +206,10 @@ class StudentClassForm extends FormBase {
 
   protected function getSubjectIdBySubject($subject) {
     $connection = \Drupal::database();
-    return $connection->query("SELECT id FROM {subjects} WHERE ime = :ime", [
+    $subject_id = $connection->query("SELECT id FROM {subjects} WHERE ime = :ime", [
         ':ime' => $subject
     ])->fetchField();
+    return $subject_id;
   }
 
   protected function getTeacherIdByUsername($user_username) {
@@ -225,17 +226,9 @@ class StudentClassForm extends FormBase {
     $user_username = $current_user->getDisplayName();
 
     $teacher_id = $this->getTeacherIdByUsername($user_username);
-    if (empty($teacher_id)) {
-        \Drupal::logger('custom_log')->error("Greška: Teacher ID nije pronađen za korisnika $user_username");
-        \Drupal::messenger()->addError("Greška: Ne mogu da pronađem teacher_id za korisnika $user_username.");
-    return;
-}
 
     $class = $form_state->getValue('odeljenje');
     $depId = $this->getDepartmentIdByClass($class);
-
-    $subject = $form_state->getValue('predmet');
-    $subject_id = $this->getSubjectIdBySubject($subject);
 
     $connection->insert('student_class')
       ->fields([
@@ -245,7 +238,7 @@ class StudentClassForm extends FormBase {
         'redni_broj_casa' => $form_state->getValue('redni_broj_casa'),
         'department_id' => $depId,
         'teacher_id' => $teacher_id,
-        'predmet_id' => $subject_id,
+        'predmet_id' => $form_state->getValue('predmet'),
       ])
       ->execute();
 
