@@ -126,6 +126,7 @@ class StudentClassForm extends FormBase {
     ];
 
     $selected_class = $form_state->getValue('odeljenje');
+    \Drupal::logger('custom_log')->debug("Izabrano odeljenje: " . print_r($selected_class, TRUE));
     $students = $this->loadStudentsByClass($selected_class);
 
     if (!empty($students)) {
@@ -192,16 +193,27 @@ class StudentClassForm extends FormBase {
       ':ime' => $class
     ])->fetchField();
 
-    return $connection->query("SELECT student_id FROM {students_departments} WHERE department_id = :department_id", [
+    $students = $connection->query("SELECT student_id FROM {students_departments} WHERE department_id = :department_id", [
         ':department_id' => $depId
     ])->fetchAll();
+
+    \Drupal::logger('custom_log')->debug("Učenici za odeljenje $class: " . print_r($students, TRUE));
+    \Drupal::logger('custom_log')->debug("Prosleđeno odeljenje: " . print_r($class, TRUE));
+    \Drupal::logger('custom_log')->debug("Pronadjen department_id za $class: " . print_r($depId, TRUE));
+    \Drupal::logger('custom_log')->debug("Učenici u odeljenju $class (depId: $depId): " . print_r($students, TRUE));
+
+    return $students;
   }
 
   protected function getDepartmentIdByClass($class) {
     $connection = \Drupal::database();
-    return $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
+    $depId = $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
         ':ime' => $class
     ])->fetchField();
+
+    \Drupal::logger('custom_log')->debug("Izabrano odeljenje: " . print_r($class, TRUE));
+
+    return $depId; 
   }
 
   protected function getSubjectIdBySubject($subject) {
