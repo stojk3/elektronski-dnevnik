@@ -35,7 +35,7 @@ class StudentClassForm extends FormBase {
         '#disabled' => TRUE,
     ];
 
-    $avaliable_classes = $this->getAvaliableClassNumbers($selected_date);
+    $avaliable_classes = $this->getAvailableClassNumbers($selected_date);
 
     $form['redni_broj_casa'] = [
         '#type' => 'select',
@@ -57,8 +57,8 @@ class StudentClassForm extends FormBase {
     if (!empty($query)) {
         $subjects_id = $query;
 
-        $subjects_query = $connection->select('subject', 's')
-                ->fields('s', ['id', 'predmet'])
+        $subjects_query = $connection->select('subjects', 's')
+                ->fields('s', ['id', 'ime'])
                 ->condition('s.id', $subjects_id, 'IN')
                 ->execute();
 
