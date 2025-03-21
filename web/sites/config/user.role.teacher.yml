@@ -1,0 +1,12 @@
+uuid: cd768037-1998-41ec-8db7-563269c66394
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_per_role
+id: teacher
+label: Teacher
+weight: 4
+is_admin: null
+permissions:
+  - 'administer menu_per_role'

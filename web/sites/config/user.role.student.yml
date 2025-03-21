@@ -1,0 +1,12 @@
+uuid: f441cb43-9697-4308-a962-fdda8863d27f
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_per_role
+id: student
+label: Student
+weight: 5
+is_admin: null
+permissions:
+  - 'administer menu_per_role'

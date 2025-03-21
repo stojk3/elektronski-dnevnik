@@ -5,76 +5,37 @@ use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_menu_links_discovered_alter().
- * Modify the menu links based on user login status.
+ * Modifies the menu links based on user login status and role.
  */
 function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
   $current_user = \Drupal::currentUser();
 
   if ($current_user->isAuthenticated()) {
-    // User is logged in, add a Logout link.
+    // Dodajemo Logout link ako je korisnik prijavljen
     $links['elektronski_dnevnik.logout_link'] = [
       'title' => t('Logout'),
       'route_name' => 'user.logout',
       'menu_name' => 'main-menu',
       'weight' => 0,
     ];
+
+    // Uklanjamo Login link ako je korisnik već ulogovan
     if (isset($links['elektronski_dnevnik.custom_login_link'])) {
       unset($links['elektronski_dnevnik.custom_login_link']);
     }
   }
   else {
-    // User is not logged in, show the Login link.
+    // Korisnik NIJE prijavljen - prikazujemo Login link
     $links['elektronski_dnevnik.custom_login_link'] = [
       'title' => t('Login'),
       'route_name' => 'elektronski_dnevnik.login',
       'menu_name' => 'main-menu',
       'weight' => 0,
     ];
+
+    // Ako postoji logout link, uklanjamo ga
     if (isset($links['elektronski_dnevnik.logout_link'])) {
       unset($links['elektronski_dnevnik.logout_link']);
     }
   }
-
-  /**
- * Dodeljuje ulogu 'teacher' prilikom logovanja.
- */
-function mymodule_user_login($account) {
-  // Proverava da li je korisnik logovan sa korisničkim imenom u 'teachers' tabeli
-  if (check_user_in_teachers_table($account->getAccountName())) {
-    // Dodeljuje ulogu 'teacher' korisniku
-    if (!$account->hasRole('teacher')) {
-      $account->addRole('teacher');  // Dodeljuje ulogu 'teacher' ako je nema
-      $account->save();  // Sprema promene u korisničkom nalogu
-    }
-  }
-}
-
-/**
- * Uklanja ulogu 'teacher' prilikom odjavljivanja.
- */
-function mymodule_user_logout($account) {
-  // Uklanja ulogu 'teacher' pri odjavi
-  if ($account->hasRole('teacher')) {
-    $account->removeRole('teacher');  // Uklanja ulogu 'teacher'
-    $account->save();  // Sprema promene u korisničkom nalogu
-  }
-}
-
-/**
- * Funkcija koja proverava da li je korisničko ime u tabeli 'teachers'.
- */
-function check_user_in_teachers_table($username) {
-  // Povezivanje sa bazom podataka
-  $connection = \Drupal::database();
-  
-  // Izvršavanje upita
-  $query = $connection->select('teachers', 't')
-                      ->fields('t', ['username'])
-                      ->condition('username', $username)
-                      ->execute();
-
-  // Ako postoji red sa tim korisničkim imenom, vraćamo TRUE, inače FALSE
-  return $query->rowCount() > 0;
-}
-
 }
