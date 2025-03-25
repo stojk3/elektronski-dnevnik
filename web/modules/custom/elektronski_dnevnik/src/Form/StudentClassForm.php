@@ -105,6 +105,7 @@ class StudentClassForm extends FormBase {
         '#ajax' => [
             'callback' => '::updateCombinedContainer',
             'wrapper' => 'combined-container',
+            'event' => 'change',
         ],
     ];
 
@@ -112,10 +113,13 @@ class StudentClassForm extends FormBase {
         '#type' => 'container',
         '#attributes' => ['id' => 'combined-container'],
     ];
+    
+    $odeljenjePrivremeni = $form_state->getValue('odeljenje');
+    $odeljenjeZaSlanje = $this->getDepartmentIdByClass($odeljenjePrivremeni);
 
     $total_classes = $this->getTotalClassesForSubjectAndClass(
         $form_state->getValue('predmet'),
-        $form_state->getValue('odeljenje'),
+        $odeljenjeZaSlanje,
     );
 
     $form['combined-container']['ukupno_casova'] = [
@@ -126,16 +130,12 @@ class StudentClassForm extends FormBase {
         '#disabled' => TRUE,
     ];
 
-    $selected_class = $form_state->getValue('odeljenje');
-    \Drupal::logger('custom_log')->debug("Izabrano odeljenje: " . print_r($selected_class, TRUE));
-    $students = $this->loadStudentsByClass($selected_class);
+    $students = $this->loadStudentsByClass($odeljenjePrivremeni);
 
     $student_options = [];
     foreach ($students as $student) {
         if (isset($student->student_id, $student->ime, $student->prezime)) {
             $student_options[$student->student_id] = $student->ime . ' ' . $student->prezime;
-        } else {
-            \Drupal::logger('custom_log')->error("Problem sa podacima studenta: " . print_r($student, TRUE));
         }
     }
 
@@ -184,11 +184,14 @@ class StudentClassForm extends FormBase {
 
   protected function getTotalClassesForSubjectAndClass($subject, $class) {
     $connection = \Drupal::database();
-    return $connection->query("SELECT COUNT(*) FROM {student_class} WHERE predmet_id = :subject AND department_id = :class", [
-      ':subject' => $subject,
-      ':class' => $class,
+    $total_classes = $connection->query("SELECT COUNT(*) FROM {student_class} WHERE predmet_id = :subject AND department_id = :class", [
+        ':subject' => $subject,
+        ':class' => $class,
     ])->fetchField();
-  }
+
+    return $total_classes;
+  } 
+
   
   protected function loadStudentsByClass($class) {
     $connection = \Drupal::database();
@@ -210,11 +213,9 @@ class StudentClassForm extends FormBase {
 
   protected function getDepartmentIdByClass($class) {
     $connection = \Drupal::database();
-    $depId = $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
+    return $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
         ':ime' => $class
     ])->fetchField();
-
-    return $depId; 
   }
 
   protected function getSubjectIdBySubject($subject) {
@@ -282,4 +283,5 @@ class StudentClassForm extends FormBase {
   public function updateCombinedContainer(array &$form, FormStateInterface $form_state) {
     return $form['combined-container'];
   }
+
 }
