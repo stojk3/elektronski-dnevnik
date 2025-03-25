@@ -18,6 +18,7 @@ class StudentClassForm extends FormBase {
         '#title' => t('Datum upisa'),
         '#default_value' => date('Y-m-d'),
         '#required' => TRUE,
+        '#disabled' => TRUE,
         '#ajax' => [
             'callback' => '::updateWeekAndClasses',
             'wrapper' => 'class-info-container',
@@ -129,19 +130,25 @@ class StudentClassForm extends FormBase {
     \Drupal::logger('custom_log')->debug("Izabrano odeljenje: " . print_r($selected_class, TRUE));
     $students = $this->loadStudentsByClass($selected_class);
 
-    if (!empty($students)) {
-        $form['combined-container']['ucenici'] = [
-            '#type' => 'checkboxes',
-            '#title' => 'Ucenici',
-            '#options' => array_reduce($students, function ($carry, $student) {
-                $carry[$student->id] = $student->first_name . ' ' . $student->last_name;
-                return $carry;
-            }, []),
-        ];
+    $student_options = [];
+    foreach ($students as $student) {
+        if (isset($student->student_id, $student->ime, $student->prezime)) {
+            $student_options[$student->student_id] = $student->ime . ' ' . $student->prezime;
+        } else {
+            \Drupal::logger('custom_log')->error("Problem sa podacima studenta: " . print_r($student, TRUE));
+        }
+    }
+
+    if (!empty($student_options)) {
+      $form['combined-container']['ucenici'] = [
+          '#type' => 'checkboxes',
+          '#title' => 'Učenici',
+          '#options' => $student_options,
+      ];
     } else {
-        $form['combined-container']['ucenici'] = [
-            '#markup' => 'Nema ucenika u @odeljenje', ['@odeljenje' => $selected_class],
-        ];
+      $form['combined-container']['ucenici'] = [
+          '#markup' => 'Nema ucenika u @odeljenje', ['@odeljenje' => $student_options],
+      ];
     }
 
     $form['tema'] = [
@@ -193,14 +200,14 @@ class StudentClassForm extends FormBase {
       ':ime' => $class
     ])->fetchField();
 
-    $students = $connection->query("SELECT student_id FROM {students_departments} WHERE department_id = :department_id", [
+    $students = $connection->query("
+        SELECT s.id AS student_id, s.ime, s.prezime 
+        FROM {students} s
+        INNER JOIN {students_departments} sd ON s.id = sd.student_id
+        WHERE sd.department_id = :department_id
+    ", [
         ':department_id' => $depId
     ])->fetchAll();
-
-    \Drupal::logger('custom_log')->debug("Učenici za odeljenje $class: " . print_r($students, TRUE));
-    \Drupal::logger('custom_log')->debug("Prosleđeno odeljenje: " . print_r($class, TRUE));
-    \Drupal::logger('custom_log')->debug("Pronadjen department_id za $class: " . print_r($depId, TRUE));
-    \Drupal::logger('custom_log')->debug("Učenici u odeljenju $class (depId: $depId): " . print_r($students, TRUE));
 
     return $students;
   }
@@ -210,8 +217,6 @@ class StudentClassForm extends FormBase {
     $depId = $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
         ':ime' => $class
     ])->fetchField();
-
-    \Drupal::logger('custom_log')->debug("Izabrano odeljenje: " . print_r($class, TRUE));
 
     return $depId; 
   }
