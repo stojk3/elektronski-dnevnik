@@ -145,10 +145,6 @@ class StudentClassForm extends FormBase {
           '#title' => 'Učenici',
           '#options' => $student_options,
       ];
-    } else {
-      $form['combined-container']['ucenici'] = [
-          '#markup' => 'Nema ucenika u @odeljenje', ['@odeljenje' => $student_options],
-      ];
     }
 
     $form['tema'] = [
@@ -266,7 +262,7 @@ class StudentClassForm extends FormBase {
             'datum_upisa' => $date,
             'redni_broj_casa' => $form_state->getValue('redni_broj_casa'),
             'student_id' => $student_id,
-            'predmet_id' => $subject_id,
+            'predmet_id' => $form_state->getValue('predmet'),
           ])
           ->execute();
       }
