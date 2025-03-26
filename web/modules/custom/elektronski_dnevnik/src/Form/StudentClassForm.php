@@ -15,7 +15,7 @@ class StudentClassForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['datum_upisa'] = [
       '#type' => 'date',
-      '#title' => t('Datum upisa'),
+      '#title' => 'Datum upisa',
       '#default_value' => date('Y-m-d'),
       '#required' => TRUE,
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
@@ -31,7 +31,7 @@ class StudentClassForm extends FormBase {
 
     $form['redni_broj_nedelje'] = [
       '#type' => 'number',
-      '#title' => t('Redni broj nedelje'),
+      '#title' => 'Redni broj nedelje',
       '#default_value' => $week_number,
       '#required' => TRUE,
       '#disabled' => TRUE,
@@ -42,7 +42,7 @@ class StudentClassForm extends FormBase {
 
     $form['redni_broj_casa'] = [
       '#type' => 'select',
-      '#title' => t('Redni broj časa'),
+      '#title' => 'Redni broj časa',
       '#options' => $avaliable_classes,
       '#required' => TRUE,
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],

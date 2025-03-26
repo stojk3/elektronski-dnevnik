@@ -86,7 +86,7 @@ class StudentGradeForm extends FormBase {
 
         $form['tip_ocene'] = [
             '#type' => 'select',
-            '#title' => t('Tip ocene'),
+            '#title' => 'Tip ocene',
             '#options' => [
                 'kontrolni' => 'Kontrolni',
                 'odgovaranje' => 'Odgovaranje',
@@ -185,7 +185,7 @@ class StudentGradeForm extends FormBase {
                         ->execute();
                 }
             }
-            \Drupal::messenger()->addMessage(t('Ocene su uspešno sačuvane.'));
+            \Drupal::messenger()->addMessage('Ocene su uspešno sačuvane.');
         }
     }
 }
