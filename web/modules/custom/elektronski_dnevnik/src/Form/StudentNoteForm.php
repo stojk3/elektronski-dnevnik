@@ -31,23 +31,65 @@ class StudentNoteForm extends FormBase {
         '7' => '7',
       ],
         '#required' => TRUE,
+        '#ajax' => [
+            'callback' => '::updateClassDetails',
+            'wrapper' => 'class-details-wrapper',  // ID za wrapper koji sadrži odeljenje i učenike
+            'effect' => 'fade',  // Efekat pri osvežavanju
+        ],
     ];
 
-    $selected_date = date('Y-m-d');
+    // Polje za odeljenje, biće prikazano ako je redni broj časa odabran
+    $form['class_details_wrapper'] = [
+        '#type' => 'container',
+        '#attributes' => ['id' => 'class-details-wrapper'],
+    ];
+
+    // Ovo je polje za odeljenje koje je popunjeno na osnovu rednog broja časa
+    $form['class_details_wrapper']['odeljenje'] = [
+        '#type' => 'select',
+        '#title' => 'Odeljenje',
+        '#options' => [],
+        '#disabled' => TRUE,  // Onemogućeno jer je samo za prikaz
+    ];
+
     $selected_class = $form_state->getValue('redni_broj_casa');
+    $selected_date = date('Y-m-d');
+    
+    // Ako je odabran redni broj časa, uzimamo detalje predmeta i odeljenja
     if ($selected_class) {
         $class_details = $this->getClassDetails($selected_date, $selected_class);
-
+        
         if ($class_details) {
-            $form['predmet'] = [
-                '#type' => 'hidden',
-                '#value' => [$class_details['predmet_id'] => $class_details['predmet_ime']],
+            // Automatsko popunjavanje odeljenja
+            $form['odeljenje'] = [
+                '#type' => 'select',
+                '#title' => 'Odeljenje',
+                '#options' => [
+                    $class_details['department_id'] => $class_details['department_ime']
+                ],
+                '#disabled' => TRUE,  // Onemogućavamo menjanje
+                '#default_value' => $class_details['department_id'],
             ];
 
-            $form['odeljenje'] = [
-                '#type' => 'hidden',
-                '#value' => [$class_details['department_id'] => $class_details['department_ime']],
-            ];
+            // Dohvatanje učenika iz baze za ovo odeljenje
+            $students = $this->loadStudentsByClass($class_details['department_id']);
+
+            // Ako postoje učenici u odeljenju, dodajemo ih u formu
+            if (!empty($students)) {
+                $form['students_container']['ucenici'] = [
+                    '#type' => 'select',
+                    '#title' => t('Učenici'),
+                    '#options' => array_reduce($students, function ($carry, $student) {
+                        $carry[$student->id] = $student->first_name . ' ' . $student->last_name;
+                        return $carry;
+                    }, []),
+                    '#required' => TRUE,
+                ];
+            } else {
+                $form['students_container']['ucenici'] = [
+                    '#markup' => t('Nema učenika u odeljenju @odeljenje.', ['@odeljenje' => $class_details['department_ime']]),
+                ];
+            }
         }
     }
 
@@ -89,6 +131,16 @@ class StudentNoteForm extends FormBase {
     return $connection->query("SELECT id FROM {teachers} WHERE username = :username", [
       ':username' => $user_username
     ])->fetchField();
+  }
+
+  protected function loadStudentsByClass($department_id) {
+    $connection = \Drupal::database();
+    $students = $connection->query(
+        "SELECT id, first_name, last_name FROM {students} WHERE department_id = :department_id",
+        [':department_id' => $department_id]
+    )->fetchAll();
+
+    return $students;
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
