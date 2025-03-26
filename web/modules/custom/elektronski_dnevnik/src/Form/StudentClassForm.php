@@ -14,38 +14,38 @@ class StudentClassForm extends FormBase {
 
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['datum_upisa'] = [
-        '#type' => 'date',
-        '#title' => t('Datum upisa'),
-        '#default_value' => date('Y-m-d'),
-        '#required' => TRUE,
-        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
-        '#disabled' => TRUE,
-        '#ajax' => [
-            'callback' => '::updateWeekAndClasses',
-            'wrapper' => 'class-info-container',
-        ],
+      '#type' => 'date',
+      '#title' => t('Datum upisa'),
+      '#default_value' => date('Y-m-d'),
+      '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#disabled' => TRUE,
+      '#ajax' => [
+        'callback' => '::updateWeekAndClasses',
+        'wrapper' => 'class-info-container',
+      ],
     ];
 
     $selected_date = $form_state->getValue('datum_upisa') ?? date('Y-m-d');
     $week_number = $this->getWeekNumberFromDate($selected_date);
 
     $form['redni_broj_nedelje'] = [
-        '#type' => 'number',
-        '#title' => t('Redni broj nedelje'),
-        '#default_value' => $week_number,
-        '#required' => TRUE,
-        '#disabled' => TRUE,
-        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#type' => 'number',
+      '#title' => t('Redni broj nedelje'),
+      '#default_value' => $week_number,
+      '#required' => TRUE,
+      '#disabled' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $avaliable_classes = $this->getAvailableClassNumbers($selected_date);
 
     $form['redni_broj_casa'] = [
-        '#type' => 'select',
-        '#title' => t('Redni broj časa'),
-        '#options' => $avaliable_classes,
-        '#required' => TRUE,
-        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#type' => 'select',
+      '#title' => t('Redni broj časa'),
+      '#options' => $avaliable_classes,
+      '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $current_user = \Drupal::currentUser();
@@ -53,117 +53,117 @@ class StudentClassForm extends FormBase {
     $user_username = $current_user->getAccountName();
 
     $query = $connection->select('teachers', 't')
-        ->fields('t', ['subject_id'])
-        ->condition('t.username', $user_username, '=')
-        ->execute()
-        ->fetchCol();
-      
+      ->fields('t', ['subject_id'])
+      ->condition('t.username', $user_username, '=')
+      ->execute()
+      ->fetchCol();
+
     if (!empty($query)) {
-        $subjects_id = $query;
+      $subjects_id = $query;
 
-        $subjects_query = $connection->select('subjects', 's')
-                ->fields('s', ['id', 'ime'])
-                ->condition('s.id', $subjects_id, 'IN')
-                ->execute();
+      $subjects_query = $connection->select('subjects', 's')
+        ->fields('s', ['id', 'ime'])
+        ->condition('s.id', $subjects_id, 'IN')
+        ->execute();
 
-        $subjects = [];
-        foreach ($subjects_query as $row) {
-            $subjects[$row->id] = $row->ime;
-        }
+      $subjects = [];
+      foreach ($subjects_query as $row) {
+        $subjects[$row->id] = $row->ime;
+      }
 
-        $form['predmet'] = [
-            '#type' => 'select',
-            '#title' => 'Predmet',
-            '#options' => $subjects,
-            '#required' => TRUE,
-            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
-            '#ajax' => [
-                'callback' => '::updateCombinedContainer',
-                'wrapper' => 'combined-container',
-            ],
-        ];
-    } else {
-        $form['message'] = [
-            '#markup' => 'Nema predmeta blablabla',
-        ];
-    }
-
-    $form['odeljenje'] = [
+      $form['predmet'] = [
         '#type' => 'select',
-        '#title' => 'Odeljenje',
-        '#options' => [
-            'I1' => 'I1',
-            'I2' => 'I2',
-            'I3' => 'I3',
-            'II1' => 'II1',
-            'II2' => 'II2',
-            'II3' => 'II3',
-            'III1' => 'III1',
-            'III2' => 'III2',
-            'III3' => 'III3',
-            'IV1' => 'IV1',
-            'IV2' => 'IV2',
-            'IV3' => 'IV3',
-        ],
+        '#title' => 'Predmet',
+        '#options' => $subjects,
         '#required' => TRUE,
         '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         '#ajax' => [
-            'callback' => '::updateCombinedContainer',
-            'wrapper' => 'combined-container',
-            'event' => 'change',
+          'callback' => '::updateCombinedContainer',
+          'wrapper' => 'combined-container',
         ],
+      ];
+    } else {
+      $form['message'] = [
+        '#markup' => 'Nema predmeta blablabla',
+      ];
+    }
+
+    $form['odeljenje'] = [
+      '#type' => 'select',
+      '#title' => 'Odeljenje',
+      '#options' => [
+        'I1' => 'I1',
+        'I2' => 'I2',
+        'I3' => 'I3',
+        'II1' => 'II1',
+        'II2' => 'II2',
+        'II3' => 'II3',
+        'III1' => 'III1',
+        'III2' => 'III2',
+        'III3' => 'III3',
+        'IV1' => 'IV1',
+        'IV2' => 'IV2',
+        'IV3' => 'IV3',
+      ],
+      '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#ajax' => [
+        'callback' => '::updateCombinedContainer',
+        'wrapper' => 'combined-container',
+        'event' => 'change',
+      ],
     ];
 
     $form['combined-container'] = [
-        '#type' => 'container',
-        '#attributes' => ['id' => 'combined-container'],
+      '#type' => 'container',
+      '#attributes' => ['id' => 'combined-container'],
     ];
-    
+
     $odeljenjePrivremeni = $form_state->getValue('odeljenje');
     $odeljenjeZaSlanje = $this->getDepartmentIdByClass($odeljenjePrivremeni);
 
     $total_classes = $this->getTotalClassesForSubjectAndClass(
-        $form_state->getValue('predmet'),
-        $odeljenjeZaSlanje,
+      $form_state->getValue('predmet'),
+      $odeljenjeZaSlanje,
     );
 
     $form['combined-container']['ukupno_casova'] = [
-        '#type' => 'number',
-        '#title' => 'Ukupan broj časova',
-        '#default_value' => $total_classes,
-        '#required' => TRUE,
-        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
-        '#disabled' => TRUE,
+      '#type' => 'number',
+      '#title' => 'Ukupan broj časova',
+      '#default_value' => $total_classes,
+      '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#disabled' => TRUE,
     ];
 
     $students = $this->loadStudentsByClass($odeljenjePrivremeni);
 
     $student_options = [];
     foreach ($students as $student) {
-        if (isset($student->student_id, $student->ime, $student->prezime)) {
-            $student_options[$student->student_id] = $student->ime . ' ' . $student->prezime;
-        }
+      if (isset($student->student_id, $student->ime, $student->prezime)) {
+        $student_options[$student->student_id] = $student->ime . ' ' . $student->prezime;
+      }
     }
 
     if (!empty($student_options)) {
       $form['combined-container']['ucenici'] = [
-          '#type' => 'checkboxes',
-          '#title' => 'Učenici',
-          '#options' => $student_options,
+        '#type' => 'checkboxes',
+        '#title' => 'Učenici',
+        '#options' => $student_options,
       ];
     }
 
     $form['tema'] = [
-        '#type' => 'textarea',
-        '#title' => 'Tema',
-        '#required' => TRUE,
+      '#type' => 'textarea',
+      '#title' => 'Tema',
+      '#required' => TRUE,
     ];
 
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
-        '#type' => 'submit',
-        '#value' => 'Snimi',
-        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#type' => 'submit',
+      '#value' => 'Snimi',
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     return $form;
@@ -171,7 +171,7 @@ class StudentClassForm extends FormBase {
 
   protected function getWeekNumberFromDate($date) {
     $first_week_date = '2024-09-01';
-    $date_diff = (strtotime($date) - strtotime($first_week_date)) / (60 *60 *24 * 7);
+    $date_diff = (strtotime($date) - strtotime($first_week_date)) / (60 * 60 * 24 * 7);
     return ceil($date_diff) + 1;
   }
 
@@ -192,14 +192,13 @@ class StudentClassForm extends FormBase {
   protected function getTotalClassesForSubjectAndClass($subject, $class) {
     $connection = \Drupal::database();
     $total_classes = $connection->query("SELECT COUNT(*) FROM {student_class} WHERE predmet_id = :subject AND department_id = :class", [
-        ':subject' => $subject,
-        ':class' => $class,
+      ':subject' => $subject,
+      ':class' => $class,
     ])->fetchField();
 
     return $total_classes;
-  } 
+  }
 
-  
   protected function loadStudentsByClass($class) {
     $connection = \Drupal::database();
     $depId = $connection->query("SELECT id FROM {departments} WHERE ime LIKE :ime", [
@@ -207,12 +206,12 @@ class StudentClassForm extends FormBase {
     ])->fetchField();
 
     $students = $connection->query("
-        SELECT s.id AS student_id, s.ime, s.prezime 
-        FROM {students} s
-        INNER JOIN {students_departments} sd ON s.id = sd.student_id
-        WHERE sd.department_id = :department_id
+      SELECT s.id AS student_id, s.ime, s.prezime 
+      FROM {students} s
+      INNER JOIN {students_departments} sd ON s.id = sd.student_id
+      WHERE sd.department_id = :department_id
     ", [
-        ':department_id' => $depId
+      ':department_id' => $depId
     ])->fetchAll();
 
     return $students;
@@ -221,14 +220,14 @@ class StudentClassForm extends FormBase {
   protected function getDepartmentIdByClass($class) {
     $connection = \Drupal::database();
     return $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
-        ':ime' => $class
+      ':ime' => $class
     ])->fetchField();
   }
 
   protected function getSubjectIdBySubject($subject) {
     $connection = \Drupal::database();
     $subject_id = $connection->query("SELECT id FROM {subjects} WHERE ime = :ime", [
-        ':ime' => $subject
+      ':ime' => $subject
     ])->fetchField();
     return $subject_id;
   }
@@ -236,7 +235,7 @@ class StudentClassForm extends FormBase {
   protected function getTeacherIdByUsername($user_username) {
     $connection = \Drupal::database();
     return $connection->query("SELECT id FROM {teachers} WHERE username = :username", [
-        ':username' => $user_username
+      ':username' => $user_username
     ])->FetchField();
   }
 
@@ -283,9 +282,9 @@ class StudentClassForm extends FormBase {
     $selected_date = $form_state->getValue('datum_upisa') ?? date('Y-m-d');
     $form['redni_broj_nedelje']['#default_value'] = $this->getWeekNumberFromDate($selected_date);
     $form['redni_broj_casa']['#options'] = $this->getAvailableClassNumbers($selected_date);
-    
+
     return $form;
-}
+  }
 
   public function updateCombinedContainer(array &$form, FormStateInterface $form_state) {
     return $form['combined-container'];

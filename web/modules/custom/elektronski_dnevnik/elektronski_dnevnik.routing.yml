@@ -50,6 +50,14 @@ elektronski_dnevnik.student_class:
   path: '/class-form'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentClassForm'
-    _title: 'Class Form'
+    _title: 'Upisivanje časova'
+  requirements:
+    _permission: 'access content'
+
+elektronski_dnevnik.student_grade:
+  path: '/grade-form'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\StudentGradeForm'
+    _title: 'Upisivanje ocena'
   requirements:
     _permission: 'access content'
