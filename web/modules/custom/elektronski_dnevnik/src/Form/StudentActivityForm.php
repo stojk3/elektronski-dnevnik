@@ -14,24 +14,24 @@ class StudentActivityForm extends FormBase {
 
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['datum_upisa'] = [
-        '#type' => 'date',
-        '#title' => 'Datum upisa',
-        '#default_value' => date('Y-m-d', strtotime('+1 day')),
-        '#required' => TRUE,
-        '#min' => date('Y-m-d', strtotime('+1 day')),
-        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#type' => 'date',
+      '#title' => 'Datum upisa',
+      '#default_value' => date('Y-m-d', strtotime('+1 day')),
+      '#required' => TRUE,
+      '#min' => date('Y-m-d', strtotime('+1 day')),
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['vrsta_aktivnosti'] = [
-        '#type' => 'select',
-        '#title' => 'Vrsta aktivnosti',
-        '#options' => [
-            'odgovaranje' => 'Odgovaranje',
-            'pismeni' => 'Pismeni',
-            'kontrolni' => 'Kontrolni',
-            'blic' => 'Blic test',
-        ],
-        '#required' => TRUE,
+      '#type' => 'select',
+      '#title' => 'Vrsta aktivnosti',
+      '#options' => [
+        'odgovaranje' => 'Odgovaranje',
+        'pismeni' => 'Pismeni',
+        'kontrolni' => 'Kontrolni',
+        'blic' => 'Blic test',
+      ],
+      '#required' => TRUE,
     ];
 
     $current_user = \Drupal::currentUser();
@@ -44,27 +44,27 @@ class StudentActivityForm extends FormBase {
       "SELECT id, ime FROM {subjects} WHERE id = (SELECT subject_id FROM {teachers} WHERE id = :teacher_id)",
       [':teacher_id' => $teacher_id]
     )->fetchAllKeyed();
-    
+
     $departments_query = $connection->query("SELECT id, ime FROM {departments}")->fetchAllKeyed();
 
     $form['predmet'] = [
-        '#type' => 'select',
-        '#title' => 'Predmet',
-        '#options' => $subjects_query,
-        '#required' => TRUE,
+      '#type' => 'select',
+      '#title' => 'Predmet',
+      '#options' => $subjects_query,
+      '#required' => TRUE,
     ];
 
     $form['odeljenje'] = [
-        '#type' => 'select',
-        '#title' => 'Odeljenje',
-        '#options' => $departments_query,
-        '#required' => TRUE,
+      '#type' => 'select',
+      '#title' => 'Odeljenje',
+      '#options' => $departments_query,
+      '#required' => TRUE,
     ];
 
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
-        '#type' => 'submit',
-        '#value' => 'Snimi',
+      '#type' => 'submit',
+      '#value' => 'Snimi',
     ];
 
     return $form;
@@ -81,15 +81,33 @@ class StudentActivityForm extends FormBase {
     $connection = \Drupal::database();
     $current_user = \Drupal::currentUser();
     $user_username = $current_user->getAccountName();
-    
+
     $teacher_id = $this->getTeacherIdByUsername($user_username);
+
+    $datum_upisa = $form_state->getValue('datum_upisa');
+    $predmet_id = $form_state->getValue('predmet');
+    $odeljenje_id = $form_state->getValue('odeljenje');
+
+    $existing_activity = $connection->query(
+      "SELECT COUNT(*) FROM {student_activity} WHERE datum_upisa = :datum AND predmet_id = :predmet_id AND department_id = :odeljenje_id",
+      [
+        ':datum' => $datum_upisa,
+        ':predmet_id' => $predmet_id,
+        ':odeljenje_id' => $odeljenje_id
+      ]
+    )->fetchField();
+
+    if ($existing_activity > 0) {
+      \Drupal::messenger()->addError('Za ovo odeljenje i predmet već postoji aktivnost na odabrani datum. Nemojte unositi više od jedne aktivnosti po danu.');
+      return;
+    }
 
     $connection->insert('student_activity')
       ->fields([
-        'datum_upisa' => $form_state->getValue('datum_upisa'),
+        'datum_upisa' => $datum_upisa,
         'vrsta_aktivnost' => $form_state->getValue('vrsta_aktivnosti'),
-        'department_id' => $form_state->getValue('odeljenje'),
-        'predmet_id' => $form_state->getValue('predmet'),
+        'department_id' => $odeljenje_id,
+        'predmet_id' => $predmet_id,
         'teacher_id' => $teacher_id,
       ])
       ->execute();

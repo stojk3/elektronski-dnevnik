@@ -69,3 +69,11 @@ elektronski_dnevnik.student_activity:
     _title: 'Upisivanje aktivnosti'
   requirements:
     _permission: 'access content'
+
+elektronski_dnevnik.student_note:
+  path: '/note-form'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\StudentNoteForm'
+    _title: 'Upisivanje napomena'
+  requirements:
+    _permission: 'access content'

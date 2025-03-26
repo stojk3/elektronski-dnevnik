@@ -26,31 +26,6 @@ class StudentGradeForm extends FormBase {
             '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
 
-        $form['odeljenje'] = [
-            '#type' => 'select',
-            '#title' => 'Odeljenje',
-            '#options' => [
-                'I1' => 'I1',
-                'I2' => 'I2',
-                'I3' => 'I3',
-                'II1' => 'II1',
-                'II2' => 'II2',
-                'II3' => 'II3',
-                'III1' => 'III1',
-                'III2' => 'III2',
-                'III3' => 'III3',
-                'IV1' => 'IV1',
-                'IV2' => 'IV2',
-                'IV3' => 'IV3',
-            ],
-            '#required' => TRUE,
-            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
-            '#ajax' => [
-                'callback' => '::updateCombinedContainer',
-                'wrapper' => 'combined-container',
-            ],
-        ];
-
         $query = $connection->select('teachers', 't')
             ->fields('t', ['subject_id'])
             ->condition('t.username', $user_username, '=')
@@ -97,6 +72,31 @@ class StudentGradeForm extends FormBase {
             ],
             '#required' => TRUE,
             '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+        ];
+
+        $form['odeljenje'] = [
+            '#type' => 'select',
+            '#title' => 'Odeljenje',
+            '#options' => [
+                'I1' => 'I1',
+                'I2' => 'I2',
+                'I3' => 'I3',
+                'II1' => 'II1',
+                'II2' => 'II2',
+                'II3' => 'II3',
+                'III1' => 'III1',
+                'III2' => 'III2',
+                'III3' => 'III3',
+                'IV1' => 'IV1',
+                'IV2' => 'IV2',
+                'IV3' => 'IV3',
+            ],
+            '#required' => TRUE,
+            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+            '#ajax' => [
+                'callback' => '::updateCombinedContainer',
+                'wrapper' => 'combined-container',
+            ],
         ];
 
         $form['combined-container'] = [
