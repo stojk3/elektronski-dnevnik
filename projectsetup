@@ -30,7 +30,7 @@ echo "[/] Importing config..."
 sleep 1
 echo "..."
 sleep 2
-fin drush cim -y
+fin drush cim -y > /dev/null 2>&1
 echo "[\\] Config imported!"
 sleep 1
 echo "[/] Clearing cache..."

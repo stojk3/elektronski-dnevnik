@@ -11,7 +11,7 @@ echo "[/] Dumping database..."
 sleep 1
 echo "..."
 sleep 1
-last_num=$(ls dbdump/staridump*.sql 2>dev/null | grep -o -E 'staridump([0-9]+)\.sql' | grep -o -E '[0-9]+' | sort -n | tail -1)
+last_num=$(ls dbdump/staridump*.sql 2>/dev/null | grep -o -E 'staridump([0-9]+)\.sql' | grep -o -E '[0-9]+' | sort -n | tail -1)
 next_num=$((last_num + 1))
 
 if [ -f "dbdump/dump.sql" ]; then
