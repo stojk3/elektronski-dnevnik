@@ -23,6 +23,7 @@ class StudentGradeForm extends FormBase {
             '#default_value' => date('Y-m-d'),
             '#max' => date('Y-m-d'),
             '#required' => TRUE,
+            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
 
         $form['odeljenje'] = [
@@ -73,6 +74,7 @@ class StudentGradeForm extends FormBase {
                 '#title' => 'Predmet',
                 '#options' => $subjects,
                 '#required' => TRUE,
+                '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
                 '#ajax' => [
                     'callback' => '::updateCombinedContainer',
                     'wrapper' => 'combined-container',
@@ -94,6 +96,7 @@ class StudentGradeForm extends FormBase {
                 'aktivnost' => 'Aktivnost',
             ],
             '#required' => TRUE,
+            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
 
         $form['combined-container'] = [
