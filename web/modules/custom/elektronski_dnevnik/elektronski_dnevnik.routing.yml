@@ -61,3 +61,11 @@ elektronski_dnevnik.student_grade:
     _title: 'Upisivanje ocena'
   requirements:
     _permission: 'access content'
+
+elektronski_dnevnik.student_activity:
+  path: '/activity-form'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\StudentActivityForm'
+    _title: 'Upisivanje aktivnosti'
+  requirements:
+    _permission: 'access content'
