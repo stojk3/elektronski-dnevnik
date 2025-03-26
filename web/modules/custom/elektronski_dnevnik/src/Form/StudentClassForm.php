@@ -18,6 +18,7 @@ class StudentClassForm extends FormBase {
         '#title' => t('Datum upisa'),
         '#default_value' => date('Y-m-d'),
         '#required' => TRUE,
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         '#disabled' => TRUE,
         '#ajax' => [
             'callback' => '::updateWeekAndClasses',
@@ -34,6 +35,7 @@ class StudentClassForm extends FormBase {
         '#default_value' => $week_number,
         '#required' => TRUE,
         '#disabled' => TRUE,
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $avaliable_classes = $this->getAvailableClassNumbers($selected_date);
@@ -43,6 +45,7 @@ class StudentClassForm extends FormBase {
         '#title' => t('Redni broj časa'),
         '#options' => $avaliable_classes,
         '#required' => TRUE,
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $current_user = \Drupal::currentUser();
@@ -73,6 +76,7 @@ class StudentClassForm extends FormBase {
             '#title' => 'Predmet',
             '#options' => $subjects,
             '#required' => TRUE,
+            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
             '#ajax' => [
                 'callback' => '::updateCombinedContainer',
                 'wrapper' => 'combined-container',
@@ -102,6 +106,7 @@ class StudentClassForm extends FormBase {
             'IV3' => 'IV3',
         ],
         '#required' => TRUE,
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         '#ajax' => [
             'callback' => '::updateCombinedContainer',
             'wrapper' => 'combined-container',
@@ -127,6 +132,7 @@ class StudentClassForm extends FormBase {
         '#title' => 'Ukupan broj časova',
         '#default_value' => $total_classes,
         '#required' => TRUE,
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         '#disabled' => TRUE,
     ];
 
@@ -157,6 +163,7 @@ class StudentClassForm extends FormBase {
     $form['actions']['submit'] = [
         '#type' => 'submit',
         '#value' => 'Snimi',
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     return $form;

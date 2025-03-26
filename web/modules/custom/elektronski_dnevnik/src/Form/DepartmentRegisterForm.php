@@ -18,12 +18,14 @@ class DepartmentRegisterForm extends FormBase {
       '#type' => 'textfield',
       '#title' => 'Ime odeljenja',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['generacija'] = [
       '#type' => 'textfield',
       '#title' => 'Generacija',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['submit'] = [

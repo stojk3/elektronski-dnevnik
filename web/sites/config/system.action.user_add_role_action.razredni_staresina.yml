@@ -1,0 +1,14 @@
+uuid: af3d0f16-e390-4f13-9573-a99ebc2e155f
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.razredni_staresina
+  module:
+    - user
+id: user_add_role_action.razredni_staresina
+label: 'Add the Razredni staresina role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: razredni_staresina

@@ -1,0 +1,9 @@
+uuid: f3d9fcf9-7f69-489e-897b-a190129215b8
+langcode: en
+status: true
+dependencies: {  }
+id: razredni_staresina
+label: 'Razredni staresina'
+weight: 6
+is_admin: null
+permissions: {  }

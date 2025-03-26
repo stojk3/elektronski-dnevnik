@@ -1,0 +1,14 @@
+uuid: d3df2c7a-96f9-4756-83e3-70cb20051501
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.razredni_staresina
+  module:
+    - user
+id: user_remove_role_action.razredni_staresina
+label: 'Remove the Razredni staresina role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: razredni_staresina

@@ -25,6 +25,7 @@ class AssignTeacherForm extends FormBase {
       '#type' => 'textfield',
       '#title' => 'Generacija',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['teacher_id'] = [
@@ -32,6 +33,7 @@ class AssignTeacherForm extends FormBase {
       '#title' => 'Profesor',
       '#options' => $teachers,
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['department_id'] = [
@@ -39,11 +41,13 @@ class AssignTeacherForm extends FormBase {
       '#title' => 'Odeljenje',
       '#options' => $departments,
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => 'Sačuvaj',
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     return $form;

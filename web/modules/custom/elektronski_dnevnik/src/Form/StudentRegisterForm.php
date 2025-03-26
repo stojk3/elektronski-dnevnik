@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\user\Entity\User;
+use Drupal\user\Entity\Role;
 
 class StudentRegisterForm extends FormBase {
 
@@ -20,47 +21,71 @@ class StudentRegisterForm extends FormBase {
       '#type' => 'textfield',
       '#title' => 'Ime',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['prezime'] = [
       '#type' => 'textfield',
       '#title' => 'Prezime',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['email'] = [
       '#type' => 'email',
       '#title' => 'Email',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['username'] = [
       '#type' => 'textfield',
       '#title' => 'Username',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['datum_rodjenja'] = [
       '#type' => 'date',
       '#title' => 'Datum rođenja',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['sifra'] = [
       '#type' => 'password',
       '#title' => 'Šifra',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['generacija'] = [
       '#type' => 'textfield',
       '#title' => 'Generacija',
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
+
+    $role_options = [];
+    if ($role = Role::load('student')) {
+      $role_options['student'] = $role->label();
+    }
+
+    if (!empty($role_options)) {
+      $form['role'] = [
+        '#type' => 'select',
+        '#title' => 'Uloga',
+        '#options' => $role_options,
+        '#default_value' => 'student',
+        '#required' => TRUE,
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      ];
+    }
 
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => 'Registruj se',
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     return $form;
@@ -86,7 +111,11 @@ class StudentRegisterForm extends FormBase {
       $user->setUsername($form_state->getValue('username'));
       $user->setEmail($form_state->getValue('email'));
       $user->setPassword($form_state->getValue('sifra'));
-      $user->addRole('student');
+      
+      if ($role = Role::load('student')) {
+        $user->addRole('student');
+      }
+      
       $user->activate();
       $user->save();
 
