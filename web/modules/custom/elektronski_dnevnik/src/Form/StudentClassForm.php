@@ -13,6 +13,7 @@ class StudentClassForm extends FormBase {
   }
 
   public function buildForm(array $form, FormStateInterface $form_state) {
+
     $form['datum_upisa'] = [
       '#type' => 'date',
       '#title' => 'Datum upisa',
@@ -22,7 +23,7 @@ class StudentClassForm extends FormBase {
       '#disabled' => TRUE,
       '#ajax' => [
         'callback' => '::updateWeekAndClasses',
-        'wrapper' => 'class-info-container',
+        'wrapper' => 'combined-container',
       ],
     ];
 
@@ -38,16 +39,51 @@ class StudentClassForm extends FormBase {
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
-    $avaliable_classes = $this->getAvailableClassNumbers($selected_date);
+    $form['odeljenje'] = [
+      '#type' => 'select',
+      '#title' => 'Odeljenje',
+      '#options' => [
+        'I1' => 'I1',
+        'I2' => 'I2',
+        'I3' => 'I3',
+        'II1' => 'II1',
+        'II2' => 'II2',
+        'II3' => 'II3',
+        'III1' => 'III1',
+        'III2' => 'III2',
+        'III3' => 'III3',
+        'IV1' => 'IV1',
+        'IV2' => 'IV2',
+        'IV3' => 'IV3',
+      ],
+      '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#ajax' => [
+        'callback' => '::updateCombinedContainer',
+        'wrapper' => 'combined-container',
+        'event' => 'change',
+      ],
+    ];
 
-    $form['redni_broj_casa'] = [
+    $form['combined-container'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'combined-container'],
+    ];
+
+
+    $odeljenjePrivremeni = $form_state->getValue('odeljenje');
+    $odeljenjeZaSlanje = $this->getDepartmentIdByClass($odeljenjePrivremeni);
+
+    $avaliable_classes = $this->getAvailableClassNumbers($selected_date, $odeljenjeZaSlanje);
+
+    $form['combined-container']['redni_broj_casa'] = [
       '#type' => 'select',
       '#title' => 'Redni broj časa',
       '#options' => $avaliable_classes,
       '#required' => TRUE,
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
-
+    
     $current_user = \Drupal::currentUser();
     $connection = \Drupal::database();
     $user_username = $current_user->getAccountName();
@@ -87,41 +123,7 @@ class StudentClassForm extends FormBase {
         '#markup' => 'Nema predmeta blablabla',
       ];
     }
-
-    $form['odeljenje'] = [
-      '#type' => 'select',
-      '#title' => 'Odeljenje',
-      '#options' => [
-        'I1' => 'I1',
-        'I2' => 'I2',
-        'I3' => 'I3',
-        'II1' => 'II1',
-        'II2' => 'II2',
-        'II3' => 'II3',
-        'III1' => 'III1',
-        'III2' => 'III2',
-        'III3' => 'III3',
-        'IV1' => 'IV1',
-        'IV2' => 'IV2',
-        'IV3' => 'IV3',
-      ],
-      '#required' => TRUE,
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
-      '#ajax' => [
-        'callback' => '::updateCombinedContainer',
-        'wrapper' => 'combined-container',
-        'event' => 'change',
-      ],
-    ];
-
-    $form['combined-container'] = [
-      '#type' => 'container',
-      '#attributes' => ['id' => 'combined-container'],
-    ];
-
-    $odeljenjePrivremeni = $form_state->getValue('odeljenje');
-    $odeljenjeZaSlanje = $this->getDepartmentIdByClass($odeljenjePrivremeni);
-
+    
     $total_classes = $this->getTotalClassesForSubjectAndClass(
       $form_state->getValue('predmet'),
       $odeljenjeZaSlanje,
@@ -175,16 +177,25 @@ class StudentClassForm extends FormBase {
     return ceil($date_diff) + 1;
   }
 
-  protected function getAvailableClassNumbers($date) {
+  protected function getAvailableClassNumbers($date, $odeljenje) {
     $connection = \Drupal::database();
-    $result = $connection->query("SELECT redni_broj_casa FROM {student_class} WHERE datum_upisa = :date", [
+    /*
+    $result = $connection->query("SELECT COUNT(*) FROM {student_class} WHERE datum_upisa = :date AND department_id = :odeljenje", [
       ':date' => $date,
+      ':odeljenje' => $odeljenje,
+    ])->fetchField();
+    */
+    $result = $connection->query("SELECT redni_broj_casa FROM {student_class} WHERE datum_upisa = :date AND department_id = :odeljenje", [
+      ':date' => $date,
+      ':odeljenje' => $odeljenje,
     ])->fetchCol();
 
     $class_numbers = range(1, 7);
     foreach ($result as $taken_class) {
       unset($class_numbers[array_search($taken_class, $class_numbers)]);
     }
+
+    $form['redni_broj_casa']['#options'] = array_combine($class_numbers, $class_numbers);
 
     return array_combine($class_numbers, $class_numbers);
   }
@@ -239,6 +250,20 @@ class StudentClassForm extends FormBase {
     ])->FetchField();
   }
 
+  protected function isClassTaken($class, $date, $class_number) {
+    $connection = \Drupal::database();
+    $result = $connection->query("SELECT COUNT(*) FROM {student_class} WHERE datum_upisa = :date AND redni_broj_casa = :class_number AND department_id = :class", [
+      ':date' => $date,
+      ':class_number' => $class_number,
+      ':class' => $class,
+    ])->fetchField();
+      
+    \Drupal::logger('elektronski-dnevnik')->notice($result);
+
+    return $result > 0;
+  }
+  
+
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $connection = \Drupal::database();
     $date = $form_state->getValue('datum_upisa');
@@ -280,7 +305,17 @@ class StudentClassForm extends FormBase {
 
   public function updateWeekAndClasses(array &$form, FormStateInterface $form_state) {
     $selected_date = $form_state->getValue('datum_upisa') ?? date('Y-m-d');
+    $selected_class = $form_state->getValue('odeljenje');
     $form['redni_broj_nedelje']['#default_value'] = $this->getWeekNumberFromDate($selected_date);
+
+    $class_numbers = range(1, 7);
+
+    foreach ($class_numbers as $key => $class_number) {
+      if ($this->isClassTaken($selected_class, $selected_date, $class_number)) {
+        unset($class_numbers[$key]);
+      }
+    }
+
     $form['redni_broj_casa']['#options'] = $this->getAvailableClassNumbers($selected_date);
 
     return $form;
