@@ -74,7 +74,7 @@ class StudentGradeForm extends FormBase {
             '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
 
-        $departments_query = $connection->query("SELECT id, ime FROM {departments}")->fetchAllKeyed();
+        $departments_query = $connection->query("SELECT ime FROM {departments}")->fetchCol();
 
         $form['odeljenje'] = [
             '#type' => 'select',

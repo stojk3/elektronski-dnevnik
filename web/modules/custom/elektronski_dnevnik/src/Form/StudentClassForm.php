@@ -78,7 +78,7 @@ class StudentClassForm extends FormBase {
       ];
     }
 
-    $departments_query = $connection->query("SELECT id, ime FROM {departments}")->fetchAllKeyed();
+    $departments_query = $connection->query("SELECT ime FROM {departments}")->fetchCol();
 
     $form['odeljenje'] = [
       '#type' => 'select',
@@ -167,12 +167,6 @@ class StudentClassForm extends FormBase {
 
   protected function getAvailableClassNumbers($date, $odeljenje) {
     $connection = \Drupal::database();
-    /*
-    $result = $connection->query("SELECT COUNT(*) FROM {student_class} WHERE datum_upisa = :date AND department_id = :odeljenje", [
-      ':date' => $date,
-      ':odeljenje' => $odeljenje,
-    ])->fetchField();
-    */
     $result = $connection->query("SELECT redni_broj_casa FROM {student_class} WHERE datum_upisa = :date AND department_id = :odeljenje", [
       ':date' => $date,
       ':odeljenje' => $odeljenje,

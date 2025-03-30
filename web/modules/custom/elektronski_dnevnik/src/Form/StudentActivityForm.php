@@ -45,7 +45,7 @@ class StudentActivityForm extends FormBase {
       [':teacher_id' => $teacher_id]
     )->fetchAllKeyed();
 
-    $departments_query = $connection->query("SELECT id, ime FROM {departments}")->fetchAllKeyed();
+    $departments_query = $connection->query("SELECT ime FROM {departments}")->fetchCol();
 
     $form['predmet'] = [
       '#type' => 'select',
@@ -77,6 +77,13 @@ class StudentActivityForm extends FormBase {
     ])->fetchField();
   }
 
+  protected function getDepartmentIdByClass($class) {
+    $connection = \Drupal::database();
+    return $connection->query("SELECT id FROM {departments} WHERE ime = :ime", [
+      ':ime' => $class
+    ])->fetchField();
+  }
+
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $connection = \Drupal::database();
     $current_user = \Drupal::currentUser();
@@ -86,7 +93,8 @@ class StudentActivityForm extends FormBase {
 
     $datum_upisa = $form_state->getValue('datum_upisa');
     $predmet_id = $form_state->getValue('predmet');
-    $odeljenje_id = $form_state->getValue('odeljenje');
+    $odeljenje_ime = $form_state->getValue('odeljenje');
+    $odeljenje_id = $this->getDepartmentIdByClass($odeljenje_ime);
 
     $existing_activity = $connection->query(
       "SELECT COUNT(*) FROM {student_activity} WHERE datum_upisa = :datum AND predmet_id = :predmet_id AND department_id = :odeljenje_id",
