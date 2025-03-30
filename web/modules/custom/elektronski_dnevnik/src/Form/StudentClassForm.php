@@ -78,23 +78,12 @@ class StudentClassForm extends FormBase {
       ];
     }
 
+    $departments_query = $connection->query("SELECT id, ime FROM {departments}")->fetchAllKeyed();
+
     $form['odeljenje'] = [
       '#type' => 'select',
       '#title' => 'Odeljenje',
-      '#options' => [
-        'I1' => 'I1',
-        'I2' => 'I2',
-        'I3' => 'I3',
-        'II1' => 'II1',
-        'II2' => 'II2',
-        'II3' => 'II3',
-        'III1' => 'III1',
-        'III2' => 'III2',
-        'III3' => 'III3',
-        'IV1' => 'IV1',
-        'IV2' => 'IV2',
-        'IV3' => 'IV3',
-      ],
+      '#options' => array_combine($departments_query, $departments_query),
       '#required' => TRUE,
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
       '#ajax' => [

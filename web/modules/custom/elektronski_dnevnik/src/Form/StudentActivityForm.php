@@ -57,7 +57,7 @@ class StudentActivityForm extends FormBase {
     $form['odeljenje'] = [
       '#type' => 'select',
       '#title' => 'Odeljenje',
-      '#options' => $departments_query,
+      '#options' => array_combine($departments_query, $departments_query),
       '#required' => TRUE,
     ];
 

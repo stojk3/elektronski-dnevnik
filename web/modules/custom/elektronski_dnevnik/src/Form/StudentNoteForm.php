@@ -14,84 +14,72 @@ class StudentNoteForm extends FormBase {
 
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['datum_upisa'] = [
-        '#type' => 'hidden',
-        '#value' => date('Y-m-d'),
-    ];
+      '#type' => 'hidden',
+      '#value' => date('Y-m-d'),
+  ];
 
-    $form['redni_broj_casa'] = [
+  $form['redni_broj_casa'] = [
+      '#type' => 'select',
+      '#title' => 'Redni broj časa',
+      '#options' => [
+      '1' => '1',
+      '2' => '2',
+      '3' => '3',
+      '4' => '4',
+      '5' => '5',
+      '6' => '6',
+      '7' => '7',
+    ],
+      '#required' => TRUE,
+  ];
+
+  $current_user = \Drupal::currentUser();
+    $connection = \Drupal::database();
+    $user_username = $current_user->getAccountName();
+
+    $query = $connection->select('teachers', 't')
+      ->fields('t', ['subject_id'])
+      ->condition('t.username', $user_username, '=')
+      ->execute()
+      ->fetchCol();
+
+    if (!empty($query)) {
+      $subjects_id = $query;
+
+      $subjects_query = $connection->select('subjects', 's')
+        ->fields('s', ['id', 'ime'])
+        ->condition('s.id', $subjects_id, 'IN')
+        ->execute();
+
+      $subjects = [];
+      foreach ($subjects_query as $row) {
+        $subjects[$row->id] = $row->ime;
+      }
+
+      $form['predmet'] = [
         '#type' => 'select',
-        '#title' => 'Redni broj časa',
-        '#options' => [
-        '1' => '1',
-        '2' => '2',
-        '3' => '3',
-        '4' => '4',
-        '5' => '5',
-        '6' => '6',
-        '7' => '7',
-      ],
+        '#title' => 'Predmet',
+        '#options' => $subjects,
         '#required' => TRUE,
         '#ajax' => [
-            'callback' => '::updateClassDetails',
-            'wrapper' => 'class-details-wrapper',  // ID za wrapper koji sadrži odeljenje i učenike
-            'effect' => 'fade',  // Efekat pri osvežavanju
+          'callback' => '::updateCombinedContainer',
+          'wrapper' => 'combined-container',
         ],
-    ];
-
-    // Polje za odeljenje, biće prikazano ako je redni broj časa odabran
-    $form['class_details_wrapper'] = [
-        '#type' => 'container',
-        '#attributes' => ['id' => 'class-details-wrapper'],
-    ];
-
-    // Ovo je polje za odeljenje koje je popunjeno na osnovu rednog broja časa
-    $form['class_details_wrapper']['odeljenje'] = [
-        '#type' => 'select',
-        '#title' => 'Odeljenje',
-        '#options' => [],
-        '#disabled' => TRUE,  // Onemogućeno jer je samo za prikaz
-    ];
-
-    $selected_class = $form_state->getValue('redni_broj_casa');
-    $selected_date = date('Y-m-d');
-    
-    // Ako je odabran redni broj časa, uzimamo detalje predmeta i odeljenja
-    if ($selected_class) {
-        $class_details = $this->getClassDetails($selected_date, $selected_class);
-        
-        if ($class_details) {
-            // Automatsko popunjavanje odeljenja
-            $form['odeljenje'] = [
-                '#type' => 'select',
-                '#title' => 'Odeljenje',
-                '#options' => [
-                    $class_details['department_id'] => $class_details['department_ime']
-                ],
-                '#disabled' => TRUE,  // Onemogućavamo menjanje
-                '#default_value' => $class_details['department_id'],
-            ];
-
-            // Dohvatanje učenika iz baze za ovo odeljenje
-            $students = $this->loadStudentsByClass($class_details['department_id']);
-
-            // Ako postoje učenici u odeljenju, dodajemo ih u formu
-            if (!empty($students)) {
-                $form['students_container']['ucenici'] = [
-                    '#type' => 'select',
-                    '#title' => t('Učenici'),
-                    '#options' => array_reduce($students, function ($carry, $student) {
-                        $carry[$student->id] = $student->first_name . ' ' . $student->last_name;
-                        return $carry;
-                    }, []),
-                    '#required' => TRUE,
-                ];
-            } else {
-                $form['students_container']['ucenici'] = [
-                    '#markup' => t('Nema učenika u odeljenju @odeljenje.', ['@odeljenje' => $class_details['department_ime']]),
-                ];
-            }
-        }
+      ];
+    } else {
+      $form['message'] = [
+        '#markup' => 'Nema predmeta blablabla',
+      ];
     }
+
+  $departments_query = $connection->query("SELECT id, ime FROM {departments}")->fetchAllKeyed();
+  
+  $form['odeljenje'] = [
+    '#type' => 'select',
+    '#title' => 'Odeljenje',
+    '#options' => array_combine($departments_query, $departments_query),
+    '#required' => TRUE,
+  ];
 
     $form['napomena'] = [
       '#type' => 'textarea',
