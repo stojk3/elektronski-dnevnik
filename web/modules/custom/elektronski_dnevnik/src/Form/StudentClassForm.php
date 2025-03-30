@@ -39,6 +39,45 @@ class StudentClassForm extends FormBase {
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
+    $current_user = \Drupal::currentUser();
+    $connection = \Drupal::database();
+    $user_username = $current_user->getAccountName();
+
+    $query = $connection->select('teachers', 't')
+      ->fields('t', ['subject_id'])
+      ->condition('t.username', $user_username, '=')
+      ->execute()
+      ->fetchCol();
+
+    if (!empty($query)) {
+      $subjects_id = $query;
+
+      $subjects_query = $connection->select('subjects', 's')
+        ->fields('s', ['id', 'ime'])
+        ->condition('s.id', $subjects_id, 'IN')
+        ->execute();
+
+      $subjects = [];
+      foreach ($subjects_query as $row) {
+        $subjects[$row->id] = $row->ime;
+      }
+
+      $form['predmet'] = [
+        '#type' => 'select',
+        '#title' => 'Predmet',
+        '#options' => $subjects,
+        '#required' => TRUE,
+        '#ajax' => [
+          'callback' => '::updateCombinedContainer',
+          'wrapper' => 'combined-container',
+        ],
+      ];
+    } else {
+      $form['message'] = [
+        '#markup' => 'Nema predmeta blablabla',
+      ];
+    }
+
     $form['odeljenje'] = [
       '#type' => 'select',
       '#title' => 'Odeljenje',
@@ -83,46 +122,6 @@ class StudentClassForm extends FormBase {
       '#required' => TRUE,
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
-    
-    $current_user = \Drupal::currentUser();
-    $connection = \Drupal::database();
-    $user_username = $current_user->getAccountName();
-
-    $query = $connection->select('teachers', 't')
-      ->fields('t', ['subject_id'])
-      ->condition('t.username', $user_username, '=')
-      ->execute()
-      ->fetchCol();
-
-    if (!empty($query)) {
-      $subjects_id = $query;
-
-      $subjects_query = $connection->select('subjects', 's')
-        ->fields('s', ['id', 'ime'])
-        ->condition('s.id', $subjects_id, 'IN')
-        ->execute();
-
-      $subjects = [];
-      foreach ($subjects_query as $row) {
-        $subjects[$row->id] = $row->ime;
-      }
-
-      $form['predmet'] = [
-        '#type' => 'select',
-        '#title' => 'Predmet',
-        '#options' => $subjects,
-        '#required' => TRUE,
-        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
-        '#ajax' => [
-          'callback' => '::updateCombinedContainer',
-          'wrapper' => 'combined-container',
-        ],
-      ];
-    } else {
-      $form['message'] = [
-        '#markup' => 'Nema predmeta blablabla',
-      ];
-    }
     
     $total_classes = $this->getTotalClassesForSubjectAndClass(
       $form_state->getValue('predmet'),
