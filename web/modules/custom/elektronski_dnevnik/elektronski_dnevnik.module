@@ -39,3 +39,16 @@ function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
     }
   }
 }
+
+function elektronski_dnevnik_access_teacher() {
+  // Dobijanje trenutnog korisnika
+  $user = \Drupal::currentUser();
+
+  // Proverite da li korisnik ima "administrator" ili "teacher" ulogu
+  if ($user->hasRole('administrator') || $user->hasRole('teacher')) {
+    return TRUE; // Dozvoliti pristup
+  }
+  else {
+    return FALSE; // Onemogućiti pristup
+  }
+}

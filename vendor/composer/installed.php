@@ -3,7 +3,7 @@
         'name' => 'drupal/recommended-project',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'c5b8ed03a1d52d3b71e2d9d3614234623728d9f0',
+        'reference' => '3602769ccd5c87fcafd2ff119b51e57f3fc0ce22',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -415,6 +415,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'drupal/menu_item_role_access' => array(
+            'pretty_version' => '2.4.0',
+            'version' => '2.4.0.0',
+            'reference' => '8.x-2.4',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/menu_item_role_access',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'drupal/menu_per_role' => array(
             'pretty_version' => '1.6.0',
             'version' => '1.6.0.0',
@@ -427,7 +436,7 @@
         'drupal/recommended-project' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'c5b8ed03a1d52d3b71e2d9d3614234623728d9f0',
+            'reference' => '3602769ccd5c87fcafd2ff119b51e57f3fc0ce22',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
