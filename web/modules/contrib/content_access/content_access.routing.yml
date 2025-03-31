@@ -1,0 +1,18 @@
+entity.node.content_access:
+  path: '/node/{node}/access'
+  defaults:
+    _title_callback: '\Drupal\content_access\Controller\ContentAccessController::getContentAccessTitle'
+    _form: '\Drupal\content_access\Form\ContentAccessPageForm'
+  requirements:
+    _content_access_node_page_access: 'TRUE'
+  options:
+    _node_operation_route: TRUE
+    _admin_route: TRUE
+
+entity.node_type.content_access_form:
+  path: '/admin/structure/types/manage/{node_type}/access'
+  defaults:
+    _title: 'Access control'
+    _form: '\Drupal\content_access\Form\ContentAccessAdminSettingsForm'
+  requirements:
+    _content_access_admin_settings_access: 'TRUE'

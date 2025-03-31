@@ -1,0 +1,8 @@
+drupal.content_access:
+  version: VERSION
+  css:
+    theme:
+      css/content_access.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

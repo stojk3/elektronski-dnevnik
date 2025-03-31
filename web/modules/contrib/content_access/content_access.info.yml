@@ -1,0 +1,14 @@
+name: Content Access
+type: module
+description: 'Provides flexible content access control.'
+core_version_requirement: ^9.4 || ^10
+package: 'Access control'
+dependencies:
+  - drupal:node
+test_dependencies:
+  - acl:acl
+
+# Information added by Drupal.org packaging script on 2023-09-06
+version: '2.0.0'
+project: 'content_access'
+datestamp: 1694005980

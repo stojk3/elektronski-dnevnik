@@ -1,0 +1,4 @@
+entity.node.content_access:
+  route_name: entity.node.content_access
+  group: node
+  title: 'Access control'

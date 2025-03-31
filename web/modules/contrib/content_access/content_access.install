@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * Content access install file.
+ */
+
+use Drupal\user\Entity\Role;
+
+/**
+ * Implements hook_install().
+ */
+function content_access_install() {
+  $config = \Drupal::configFactory()->getEditable('content_access.settings');
+  $roles_gids = [];
+
+  $roles = Role::loadMultiple();
+  $i = 1;
+  foreach ($roles as $role) {
+    $roles_gids[$i] = $role->id();
+    $i++;
+  }
+
+  $config
+    ->set('content_access_roles_gids', array_flip($roles_gids))
+    ->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function content_access_uninstall() {
+  content_access_disabling(TRUE);
+}
+
+/**
+ * Implements hook_schema().
+ */
+function content_access_schema() {
+  $schema['content_access'] = [
+    'fields' => [
+      'nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'settings' => [
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'medium',
+      ],
+    ],
+    'primary key' => ['nid'],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Convert settings from serialize to json_encode.
+ */
+function content_access_update_9201() {
+  // Get all current values from DB.
+  $database = \Drupal::database();
+  $settings = $database->select('content_access', 'c')
+    ->fields('c', ['nid', 'settings'])
+    ->execute();
+  // Unserialize all values and save json_encoded value to DB.
+  foreach ($settings as $setting) {
+    $setting_array = unserialize($setting->settings, ['allowed_classes' => FALSE]);
+    $database->update('content_access')
+      ->fields([
+        'settings' => json_encode($setting_array),
+      ])
+      ->condition('nid', $setting->nid, '=')
+      ->execute();
+  }
+}

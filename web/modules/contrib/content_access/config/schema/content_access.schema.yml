@@ -1,0 +1,16 @@
+content_access.settings:
+  type: config_object
+  label: 'Content Access settings'
+  mapping:
+    content_access_roles_gids:
+      type: sequence
+      label: 'Role - Grant Id mapping array'
+      sequence:
+        type: integer
+        label: 'Grant ID'
+    content_access_node_type:
+      type: sequence
+      label: 'Content Access node type settings'
+      sequence:
+        type: string
+        label: 'Grants'

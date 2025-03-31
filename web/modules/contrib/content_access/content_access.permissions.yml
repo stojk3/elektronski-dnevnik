@@ -1,0 +1,7 @@
+grant content access:
+  title: 'Grant content access'
+  description: 'View and modify content access for any nodes'
+
+grant own content access:
+  title: 'Grant own content access'
+  description: 'View and modify content access for own nodes'
