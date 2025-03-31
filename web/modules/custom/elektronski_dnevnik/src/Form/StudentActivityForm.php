@@ -19,7 +19,7 @@ class StudentActivityForm extends FormBase {
       '#default_value' => date('Y-m-d', strtotime('+1 day')),
       '#required' => TRUE,
       '#min' => date('Y-m-d', strtotime('+1 day')),
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['vrsta_aktivnosti'] = [
@@ -32,6 +32,7 @@ class StudentActivityForm extends FormBase {
         'blic' => 'Blic test',
       ],
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $current_user = \Drupal::currentUser();
@@ -52,6 +53,7 @@ class StudentActivityForm extends FormBase {
       '#title' => 'Predmet',
       '#options' => $subjects_query,
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['odeljenje'] = [
@@ -59,11 +61,13 @@ class StudentActivityForm extends FormBase {
       '#title' => 'Odeljenje',
       '#options' => array_combine($departments_query, $departments_query),
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
       '#value' => 'Snimi',
     ];
 

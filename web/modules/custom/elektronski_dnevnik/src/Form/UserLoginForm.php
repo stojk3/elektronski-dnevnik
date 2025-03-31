@@ -25,16 +25,19 @@ class UserLoginForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Username'),
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['password'] = [
       '#type' => 'password',
       '#title' => $this->t('Password'),
       '#required' => TRUE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['submit'] = [
       '#type' => 'submit',
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
       '#value' => $this->t('Login'),
     ];
 

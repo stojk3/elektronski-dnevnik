@@ -10,7 +10,7 @@ elektronski_dnevnik.student_register:
   path: '/student-register'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentRegisterForm'
-    _title: 'Student Register'
+    _title: 'Registruj učenika'
   requirements:
     _permission: 'administer site configuration'
 
@@ -18,7 +18,7 @@ elektronski_dnevnik.teacher_register:
   path: '/teacher-register'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\TeacherRegisterForm'
-    _title: 'Teacher Register'
+    _title: 'Registruj profesora'
   requirements:
     _permission: 'administer site configuration'
 
@@ -26,7 +26,7 @@ elektronski_dnevnik.department_register:
   path: '/department-register'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\DepartmentRegisterForm'
-    _title: 'Department Register'
+    _title: 'Registruj odeljenje'
   requirements:
     _permission: 'administer site configuration'
 
@@ -34,7 +34,7 @@ elektronski_dnevnik.assign_student:
   path: '/assign-student'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\AssignStudentForm'
-    _title: 'Assign Student'
+    _title: 'Dodeli učenika'
   requirements:
     _permission: 'administer site configuration'
 
@@ -42,7 +42,7 @@ elektronski_dnevnik.assign_teacher:
   path: '/assign-teacher'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\AssignTeacherForm'
-    _title: 'Assign Teacher'
+    _title: 'Dodeli profesora'
   requirements:
     _permission: 'administer site configuration'
 

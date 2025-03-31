@@ -15,8 +15,12 @@ class AssignTeacherForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $connection = Database::getConnection();
 
-    $teachers = $connection->query("SELECT id, CONCAT(ime, ' ', prezime) AS name FROM teachers")
-      ->fetchAllKeyed();
+    $teachers = $connection->query(
+      "SELECT t.id, CONCAT(t.ime, ' ', t.prezime) AS name 
+      FROM teachers t 
+      LEFT JOIN teachers_departments td ON t.id = td.teacher_id 
+      WHERE td.teacher_id IS NULL"
+    )->fetchAllKeyed();
 
     $departments = $connection->query("SELECT id, ime FROM departments")
       ->fetchAllKeyed();
@@ -46,7 +50,7 @@ class AssignTeacherForm extends FormBase {
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Sačuvaj',
+      '#value' => 'Dodeli',
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 

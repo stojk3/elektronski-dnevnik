@@ -15,7 +15,7 @@ class AssignStudentForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $connection = Database::getConnection();
 
-    $students = $connection->query("SELECT id, CONCAT(ime, ' ', prezime) AS name FROM students")
+    $students = $connection->query("SELECT id, CONCAT(ime, ' ', prezime) AS name FROM students WHERE id NOT IN (SELECT student_id FROM students_departments)")
       ->fetchAllKeyed();
 
     $departments = $connection->query("SELECT id, ime FROM departments")
@@ -46,7 +46,7 @@ class AssignStudentForm extends FormBase {
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Sačuvaj',
+      '#value' => 'Dodeli',
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
@@ -66,5 +66,4 @@ class AssignStudentForm extends FormBase {
 
     \Drupal::messenger()->addMessage('Učenik uspešno dodeljen odeljenju!');
   }
-
 }

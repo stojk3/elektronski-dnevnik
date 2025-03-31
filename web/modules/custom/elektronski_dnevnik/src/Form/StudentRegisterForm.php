@@ -84,11 +84,20 @@ class StudentRegisterForm extends FormBase {
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Registruj se',
+      '#value' => 'Registruj',
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     return $form;
+  }
+
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $username = $form_state->getValue('username');
+    $existing_user = user_load_by_name($username);
+
+    if ($existing_user) {
+      $form_state->setErrorByName('username', 'Korisničko ime već postoji. Molimo unesite drugo.');
+    }
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {

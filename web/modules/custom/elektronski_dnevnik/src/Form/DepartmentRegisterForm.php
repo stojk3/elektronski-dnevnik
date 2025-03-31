@@ -30,7 +30,7 @@ class DepartmentRegisterForm extends FormBase {
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Registruj odeljenje',
+      '#value' => 'Registruj',
     ];
 
     return $form;

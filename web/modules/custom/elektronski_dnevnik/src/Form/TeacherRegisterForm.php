@@ -90,11 +90,25 @@ class TeacherRegisterForm extends FormBase {
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Registruj se',
+      '#value' => 'Registruj',
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     return $form;
+  }
+
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $connection = Database::getConnection();
+    $username = $form_state->getValue('username');
+    $query = $connection->select('teachers', 't')
+      ->fields('t', ['username'])
+      ->condition('username', $username)
+      ->execute()
+      ->fetchField();
+
+    if ($query) {
+      $form_state->setErrorByName('username', 'Korisničko ime već postoji. Molimo odaberite drugo.');
+    }
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {

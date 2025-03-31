@@ -41,6 +41,7 @@ class StudentNoteForm extends FormBase {
         '#title' => 'Predmet',
         '#options' => $subjects,
         '#required' => TRUE,
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
       ];
     } else {
       $form['message'] = [
@@ -55,6 +56,7 @@ class StudentNoteForm extends FormBase {
       '#title' => 'Odeljenje',
       '#options' => array_combine($departments_query, $departments_query),
       '#required' => TRUE,
+      '#attributes' => ['style' => 'width: 810px; height: 40px; line-height: 38px; padding: 0 10px;'],
       '#ajax' => [
         'callback' => '::updateStudents',
         'wrapper' => 'combined-container',
@@ -94,6 +96,7 @@ class StudentNoteForm extends FormBase {
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
       '#value' => 'Snimi',
     ];
 

@@ -19,7 +19,7 @@ class StudentClassForm extends FormBase {
       '#title' => 'Datum upisa',
       '#default_value' => date('Y-m-d'),
       '#required' => TRUE,
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 810px; height: 40px; line-height: 38px; padding: 0 10px;'],
       '#disabled' => TRUE,
       '#ajax' => [
         'callback' => '::updateWeekAndClasses',
@@ -36,7 +36,7 @@ class StudentClassForm extends FormBase {
       '#default_value' => $week_number,
       '#required' => TRUE,
       '#disabled' => TRUE,
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $current_user = \Drupal::currentUser();
@@ -67,6 +67,7 @@ class StudentClassForm extends FormBase {
         '#title' => 'Predmet',
         '#options' => $subjects,
         '#required' => TRUE,
+        '#attributes' => ['style' => 'width: 810px; height: 40px; line-height: 38px; padding: 0 10px;'],
         '#ajax' => [
           'callback' => '::updateCombinedContainer',
           'wrapper' => 'combined-container',
@@ -109,7 +110,7 @@ class StudentClassForm extends FormBase {
       '#title' => 'Redni broj časa',
       '#options' => $avaliable_classes,
       '#required' => TRUE,
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
     
     $total_classes = $this->getTotalClassesForSubjectAndClass(
@@ -122,7 +123,7 @@ class StudentClassForm extends FormBase {
       '#title' => 'Ukupan broj časova',
       '#default_value' => $total_classes,
       '#required' => TRUE,
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
       '#disabled' => TRUE,
     ];
 
