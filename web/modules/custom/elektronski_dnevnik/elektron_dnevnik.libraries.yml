@@ -1,0 +1,6 @@
+grade_toggle:
+  version: 1.0
+  js:
+    js/grade_toggle.js: {}
+  dependencies:
+    - core/jquery

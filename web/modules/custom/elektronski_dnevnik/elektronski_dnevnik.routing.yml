@@ -77,3 +77,11 @@ elektronski_dnevnik.student_note:
     _title: 'Upisivanje napomena'
   requirements:
     _permission: 'access content'
+
+elektronski_dnevnik.student_grade_controller:
+  path: '/student-grades'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\StudentGradesController::viewGrades'
+    _title: 'Ispis ocena'
+  requirements:
+    _permission: 'access content'
