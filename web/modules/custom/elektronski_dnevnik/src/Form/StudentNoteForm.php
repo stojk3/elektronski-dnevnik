@@ -100,6 +100,18 @@ class StudentNoteForm extends FormBase {
       '#value' => 'Snimi',
     ];
 
+    $form['#attached']['html_head'][] = [
+      [
+        '#tag' => 'style',
+        '#value' => '
+          .input-group-addon { 
+            display: none !important; 
+          }
+        ',
+      ],
+      'hide_ajax_button',
+    ];    
+
     return $form;
   }
 

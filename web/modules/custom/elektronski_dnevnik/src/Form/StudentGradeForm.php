@@ -23,7 +23,6 @@ class StudentGradeForm extends FormBase {
             '#default_value' => date('Y-m-d'),
             '#max' => date('Y-m-d'),
             '#required' => TRUE,
-            '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
 
         $query = $connection->select('teachers', 't')
@@ -49,16 +48,13 @@ class StudentGradeForm extends FormBase {
                 '#title' => 'Predmet',
                 '#options' => $subjects,
                 '#required' => TRUE,
-                '#attributes' => ['style' => 'width: 810px; height: 40px; line-height: 38px; padding: 0 10px;'],
                 '#ajax' => [
                     'callback' => '::updateCombinedContainer',
                     'wrapper' => 'combined-container',
                 ],
             ];
         } else {
-            $form['message'] = [
-                '#markup' => 'Nema predmeta blablabla',
-            ];
+            $form['message'] = ['#markup' => 'Nema predmeta blablabla'];
         }
 
         $form['tip_ocene'] = [
@@ -71,59 +67,39 @@ class StudentGradeForm extends FormBase {
                 'aktivnost' => 'Aktivnost',
             ],
             '#required' => TRUE,
-            '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
 
         $departments_query = $connection->query("SELECT ime FROM {departments}")->fetchCol();
-
         $form['odeljenje'] = [
             '#type' => 'select',
             '#title' => 'Odeljenje',
             '#options' => array_combine($departments_query, $departments_query),
             '#required' => TRUE,
-            '#attributes' => ['style' => 'width: 810px; height: 40px; line-height: 38px; padding: 0 10px;'],
             '#ajax' => [
                 'callback' => '::updateCombinedContainer',
                 'wrapper' => 'combined-container',
             ],
         ];
 
-        $form['combined-container'] = [
-            '#type' => 'container',
-            '#attributes' => ['id' => 'combined-container'],
-        ];
-
+        $form['combined-container'] = ['#type' => 'container', '#attributes' => ['id' => 'combined-container']];
         $odeljenjePrivremeni = $form_state->getValue('odeljenje');
 
         if (!empty($odeljenjePrivremeni)) {
             $students = $this->loadStudentsByClass($odeljenjePrivremeni);
 
             if (!empty($students)) {
-                $form['combined-container']['ucenici'] = [
-                    '#type' => 'table',
-                    '#header' => ['Učenik', 'Ocena'],
-                ];
+                $form['combined-container']['ucenici'] = ['#type' => 'table', '#header' => ['Učenik', 'Ocena']];
 
                 foreach ($students as $student) {
-                    $form['combined-container']['ucenici'][$student->student_id]['name'] = [
-                        '#markup' => $student->ime . ' ' . $student->prezime,
-                    ];
+                    $form['combined-container']['ucenici'][$student->student_id]['name'] = ['#markup' => $student->ime . ' ' . $student->prezime];
                     $form['combined-container']['ucenici'][$student->student_id]['grade'] = [
                         '#type' => 'select',
-                        '#options' => [
-                            1 => '1',
-                            2 => '2',
-                            3 => '3',
-                            4 => '4',
-                            5 => '5',
-                        ],
+                        '#options' => [1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5'],
                         '#empty_option' => '- Izaberi ocenu -',
                     ];
                 }
             } else {
-                $form['combined-container']['message'] = [
-                    '#markup' => 'Nema učenika u odabranom odeljenju.',
-                ];
+                $form['combined-container']['message'] = ['#markup' => 'Nema učenika u odabranom odeljenju.'];
             }
         }
 
@@ -131,29 +107,39 @@ class StudentGradeForm extends FormBase {
         $form['actions']['submit'] = [
             '#type' => 'submit',
             '#value' => 'Snimi',
-            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
+
+        $form['#attached']['html_head'][] = [
+            [
+              '#tag' => 'style',
+              '#value' => '
+                .input-group-addon { 
+                  display: none !important; 
+                }
+              ',
+            ],
+            'hide_ajax_button',
+        ];          
 
         return $form;
     }
 
-    protected function loadStudentsByClass($class) {
-        $connection = \Drupal::database();
-        $depId = $connection->query("SELECT id FROM {departments} WHERE ime LIKE :ime", [
-            ':ime' => $class
-        ])->fetchField();
+    public function validateForm(array &$form, FormStateInterface $form_state) {
+        $students_grades = $form_state->getValue('ucenici');
+        $has_grade = FALSE;
 
-        return $connection->query(
-            "SELECT s.id AS student_id, s.ime, s.prezime 
-            FROM {students} s
-            INNER JOIN {students_departments} sd ON s.id = sd.student_id
-            WHERE sd.department_id = :department_id",
-            [':department_id' => $depId]
-        )->fetchAll();
-    }
+        if (is_array($students_grades)) {
+            foreach ($students_grades as $data) {
+                if (!empty($data['grade'])) {
+                    $has_grade = TRUE;
+                    break;
+                }
+            }
+        }
 
-    public function updateCombinedContainer(array &$form, FormStateInterface $form_state) {
-        return $form['combined-container'];
+        if (!$has_grade) {
+            $form_state->setErrorByName('ucenici', 'Morate dodeliti barem jednu ocenu.');
+        }
     }
 
     public function submitForm(array &$form, FormStateInterface $form_state) {
@@ -179,5 +165,22 @@ class StudentGradeForm extends FormBase {
             }
             \Drupal::messenger()->addMessage('Ocene su uspešno sačuvane.');
         }
+    }
+
+    protected function loadStudentsByClass($class) {
+        $connection = \Drupal::database();
+        $depId = $connection->query("SELECT id FROM {departments} WHERE ime LIKE :ime", [':ime' => $class])->fetchField();
+
+        return $connection->query(
+            "SELECT s.id AS student_id, s.ime, s.prezime 
+            FROM {students} s
+            INNER JOIN {students_departments} sd ON s.id = sd.student_id
+            WHERE sd.department_id = :department_id",
+            [':department_id' => $depId]
+        )->fetchAll();
+    }
+
+    public function updateCombinedContainer(array &$form, FormStateInterface $form_state) {
+        return $form['combined-container'];
     }
 }

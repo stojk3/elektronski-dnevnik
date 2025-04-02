@@ -157,6 +157,18 @@ class StudentClassForm extends FormBase {
       '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
+    $form['#attached']['html_head'][] = [
+      [
+        '#tag' => 'style',
+        '#value' => '
+          .input-group-addon { 
+            display: none !important; 
+          }
+        ',
+      ],
+      'hide_ajax_button',
+    ];
+
     return $form;
   }
 
@@ -269,20 +281,22 @@ class StudentClassForm extends FormBase {
         'predmet_id' => $form_state->getValue('predmet'),
       ])
       ->execute();
-
-    foreach ($form_state->getValue('ucenici') as $student_id => $is_absent) {
-      if ($is_absent) {
-        $connection->insert('student_attendance')
-          ->fields([
-            'datum_upisa' => $date,
-            'redni_broj_casa' => $form_state->getValue('redni_broj_casa'),
-            'student_id' => $student_id,
-            'predmet_id' => $form_state->getValue('predmet'),
-          ])
-          ->execute();
-      }
+    
+    $selected_students = array_filter($form_state->getValue('ucenici'));
+    if (!empty($selected_students)) {
+        foreach ($selected_students as $student_id => $is_absent) {
+            if ($is_absent) {
+                $connection->insert('student_attendance')
+                  ->fields([
+                    'datum_upisa' => $date,
+                    'redni_broj_casa' => $form_state->getValue('redni_broj_casa'),
+                    'student_id' => $student_id,
+                    'predmet_id' => $form_state->getValue('predmet'),
+                  ])
+                  ->execute();
+            }
+        }
     }
-
     \Drupal::messenger()->addMessage('Podaci o času i prisutnosti učenika su uspešno sačuvani.');
   }
 
