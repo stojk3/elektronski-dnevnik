@@ -56,7 +56,7 @@ class StudentNoteForm extends FormBase {
       '#title' => 'Odeljenje',
       '#options' => array_combine($departments_query, $departments_query),
       '#required' => TRUE,
-      '#attributes' => ['style' => 'width: 810px; height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
       '#ajax' => [
         'callback' => '::updateStudents',
         'wrapper' => 'combined-container',

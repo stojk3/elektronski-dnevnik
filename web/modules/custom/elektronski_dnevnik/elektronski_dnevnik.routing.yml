@@ -52,7 +52,7 @@ elektronski_dnevnik.student_class:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentClassForm'
     _title: 'Upisivanje časova'
   requirements:
-    _permission: 'access content'
+    _custom_access: 'elektronski_dnevnik_teacher_access'
 
 elektronski_dnevnik.student_grade:
   path: '/grade-form'
@@ -60,7 +60,7 @@ elektronski_dnevnik.student_grade:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentGradeForm'
     _title: 'Upisivanje ocena'
   requirements:
-    _permission: 'access content'
+    _custom_access: 'elektronski_dnevnik_teacher_access'
 
 elektronski_dnevnik.student_activity:
   path: '/activity-form'
@@ -68,7 +68,7 @@ elektronski_dnevnik.student_activity:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentActivityForm'
     _title: 'Upisivanje aktivnosti'
   requirements:
-    _permission: 'access content'
+    _custom_access: 'elektronski_dnevnik_teacher_access'
 
 elektronski_dnevnik.student_note:
   path: '/note-form'
@@ -76,7 +76,7 @@ elektronski_dnevnik.student_note:
     _form: '\Drupal\elektronski_dnevnik\Form\StudentNoteForm'
     _title: 'Upisivanje napomena'
   requirements:
-    _permission: 'access content'
+    _custom_access: 'elektronski_dnevnik_teacher_access'
 
 elektronski_dnevnik.student_grade_controller:
   path: '/student-grades'
@@ -84,4 +84,4 @@ elektronski_dnevnik.student_grade_controller:
     _controller: '\Drupal\elektronski_dnevnik\Controller\StudentGradesController::viewGrades'
     _title: 'Ispis ocena'
   requirements:
-    _permission: 'access content'
+    _custom_access: 'elektronski_dnevnik_student_access'

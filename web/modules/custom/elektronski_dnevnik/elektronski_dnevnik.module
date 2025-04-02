@@ -40,15 +40,16 @@ function elektronski_dnevnik_menu_links_discovered_alter(array &$links) {
   }
 }
 
-function elektronski_dnevnik_access_teacher() {
-  // Dobijanje trenutnog korisnika
-  $user = \Drupal::currentUser();
+/**
+ * Callback funkcija za ograničavanje pristupa.
+ */
+function elektronski_dnevnik_teacher_access(AccountInterface $account) {
+  return $account->hasRole('teacher') ? AccessResult::allowed() : AccessResult::forbidden();
+}
 
-  // Proverite da li korisnik ima "administrator" ili "teacher" ulogu
-  if ($user->hasRole('administrator') || $user->hasRole('teacher')) {
-    return TRUE; // Dozvoliti pristup
-  }
-  else {
-    return FALSE; // Onemogućiti pristup
-  }
+/**
+ * Callback funkcija za ograničavanje pristupa.
+ */
+function elektronski_dnevnik_student_access(AccountInterface $account) {
+  return $account->hasRole('student') ? AccessResult::allowed() : AccessResult::forbidden();
 }

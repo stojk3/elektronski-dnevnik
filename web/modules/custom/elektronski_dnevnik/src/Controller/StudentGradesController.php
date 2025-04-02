@@ -33,7 +33,7 @@ class StudentGradesController extends ControllerBase {
         $student_id = $user_data['id'];
 
         $query = $connection->select('student_grades', 'g');
-        $query->fields('g', ['ocena', 'predmet_id']); // Uklonjen tip_ocene i datum_upisa
+        $query->fields('g', ['ocena', 'predmet_id']); 
         $query->condition('student_id', $student_id);
         $results = $query->execute()->fetchAll();
 
@@ -66,7 +66,7 @@ class StudentGradesController extends ControllerBase {
             $grades_string = [];
             $sum = 0;
             foreach ($grades as $grade) {
-                $grades_string[] = "{$grade['ocena']}"; // Prikazuje samo ocenu
+                $grades_string[] = "{$grade['ocena']}"; 
                 $sum += $grade['ocena'];
             }
             $average = $sum / count($grades);
