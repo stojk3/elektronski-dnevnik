@@ -38,9 +38,12 @@ class StudentActivityController extends ControllerBase {
 
         $department_id = $user_dep_data['department_id'];
 
+        $current_date = date('Y-m-d');
+
         $query = $connection->select('student_activity', 'g')
             ->fields('g', ['vrsta_aktivnost', 'datum_upisa', 'predmet_id'])
             ->condition('g.department_id', $department_id)
+            ->condition('g.datum_upisa', $current_date, '>')
             ->orderBy('datum_upisa', 'ASC')
             ->execute();
 
@@ -73,7 +76,7 @@ class StudentActivityController extends ControllerBase {
             '#type' => 'table',
             '#header' => $header,
             '#rows' => $rows,
-            '#empty' => $this->t('Nemate upisanih aktivnosti.'),
+            '#empty' => $this->t('Nemate zakazanih aktivnosti.'),
         ];
     }
 }
