@@ -38,7 +38,6 @@ class StudentGradesController extends ControllerBase {
         $results = $query->execute()->fetchAll();
 
         if (empty($results)) {
-            \Drupal::logger('elektronski_dnevnik')->info('Nema ocena za studenta ID: @student_id', ['@student_id' => $student_id]);
             return ['#markup' => $this->t('Nemate zabeležene ocene.')];
         }
 
