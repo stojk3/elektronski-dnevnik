@@ -30,15 +30,31 @@ class StudentActivityController extends ControllerBase {
             ':username' => $user_username
         ])->fetchAssoc();
 
+        if (!$user_data) {
+            return ['#markup' => $this->t('Nemate pristup zakazanim aktivnostima.')];
+        }
+
         $student_id = $user_data['id'];
+
+        \Drupal::logger('student_activity')->notice('Student ID: @student_id', [
+            '@student_id' => $student_id
+        ]);
 
         $user_dep_data = $connection->query("SELECT department_id FROM {students_departments} WHERE student_id = :student_id", [
             ':student_id' => $student_id
         ])->fetchAssoc();
 
-        $department_id = $user_dep_data['department_id'];
+        if (!$user_dep_data) {
+            return ['#markup' => $this->t('Nemate odeljenje, pa samim tim ni zakazane aktivnosti.')];
+        }
 
+        $department_id = $user_dep_data['department_id'];
         $current_date = date('Y-m-d');
+
+        \Drupal::logger('student_activity')->notice('Department ID: @dep_id, Date: @date', [
+            '@dep_id' => $department_id,
+            '@date' => $current_date
+        ]);
 
         $query = $connection->select('student_activity', 'g')
             ->fields('g', ['vrsta_aktivnost', 'datum_upisa', 'predmet_id'])
