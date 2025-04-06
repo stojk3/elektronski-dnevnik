@@ -83,6 +83,8 @@ elektronski_dnevnik.student_grade_controller:
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\StudentGradesController::viewGrades'
     _title: 'Ispis ocena'
+  options:
+    no_cache: 'TRUE'
   requirements:
     _custom_access: 'elektronski_dnevnik_student_access'
 
@@ -91,5 +93,7 @@ elektronski_dnevnik.student_activity_controller:
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\StudentActivityController::viewActivity'
     _title: 'Ispis zakazanih aktivnosti'
+  options:
+    no_cache: 'TRUE'
   requirements:
     _custom_access: 'elektronski_dnevnik_student_access'

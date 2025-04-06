@@ -9,18 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class StudentGradesController extends ControllerBase {
 
-    protected $currentUser;
-
-    public function __construct(AccountInterface $current_user) {
-        $this->currentUser = $current_user;
-    }
-
-    public static function create(ContainerInterface $container) {
-        return new static(
-            $container->get('current_user')
-        );
-    }
-
     public function viewGrades() {
         $current_user = \Drupal::currentUser();
         $user_username = $current_user->getAccountName();

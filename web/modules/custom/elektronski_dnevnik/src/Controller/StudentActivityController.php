@@ -9,18 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class StudentActivityController extends ControllerBase {
 
-    protected $currentUser;
-
-    public function __construct(AccountInterface $current_user) {
-        $this->currentUser = $current_user;
-    }
-
-    public static function create(ContainerInterface $container) {
-        return new static(
-            $container->get('current_user')
-        );
-    }
-
     public function viewActivity() {
         $current_user = \Drupal::currentUser();
         $user_username = $current_user->getAccountName();
@@ -36,17 +24,9 @@ class StudentActivityController extends ControllerBase {
 
         $student_id = $user_data['id'];
 
-        \Drupal::logger('student_activity')->notice('Student ID: @student_id', [
-            '@student_id' => $student_id
-        ]);
-
         $user_dep_data = $connection->query("SELECT department_id FROM {students_departments} WHERE student_id = :student_id", [
             ':student_id' => $student_id
         ])->fetchAssoc();
-
-        if (!$user_dep_data) {
-            return ['#markup' => $this->t('Nemate odeljenje, pa samim tim ni zakazane aktivnosti.')];
-        }
 
         $department_id = $user_dep_data['department_id'];
         $current_date = date('Y-m-d');
