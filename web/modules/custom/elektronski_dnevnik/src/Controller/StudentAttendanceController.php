@@ -23,7 +23,7 @@ class StudentAttendanceController extends ControllerBase {
         $query = $connection->select('student_attendance', 'sa')
             ->fields('sa', ['datum_upisa', 'redni_broj_casa', 'predmet_id'])
             ->condition('sa.student_id', $student_id)
-            ->orderBy('datum_upisa', 'ASC')
+            ->orderBy('datum_upisa', 'DESC')
             ->execute();
     
         $results = $query->fetchAll();
@@ -65,10 +65,16 @@ class StudentAttendanceController extends ControllerBase {
         ];
     
         return [
-            '#type' => 'table',
-            '#header' => $header,
-            '#rows' => $rows,
-            '#empty' => $this->t('Nema evidentiranih prisustava.'),
-        ];
+            '#type' => 'container',
+            'attendance_table' => [
+                '#type' => 'table',
+                '#header' => $header,
+                '#rows' => $rows,
+                '#empty' => $this->t('Nema evidentiranih prisustava.'),
+            ],
+            'total_absences' => [
+                '#markup' => '<p><strong>' . $this->t('Ukupan broj izostanaka: @count', ['@count' => count($results)]) . '</strong></p>',
+            ],
+        ];        
     }
 }
