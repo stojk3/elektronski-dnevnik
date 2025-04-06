@@ -97,3 +97,13 @@ elektronski_dnevnik.student_activity_controller:
     no_cache: 'TRUE'
   requirements:
     _custom_access: 'elektronski_dnevnik_student_access'
+
+elektronski_dnevnik.student_attendance_controller:
+  path: '/student-attendance'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\StudentAttendanceController::viewAttendance'
+    _title: 'Ispis izostanaka'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: 'elektronski_dnevnik_student_access'
