@@ -9,7 +9,7 @@ env:
 jobs:
   install:
     name: Verify boilerplate installs
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Install Docksal
         run: curl -fsSL https://get.docksal.io | bash
