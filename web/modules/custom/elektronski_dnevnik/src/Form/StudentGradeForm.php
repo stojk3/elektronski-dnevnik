@@ -21,7 +21,8 @@ class StudentGradeForm extends FormBase {
             '#type' => 'date',
             '#title' => 'Datum upisa',
             '#default_value' => date('Y-m-d'),
-            '#max' => date('Y-m-d'),
+            '#disabled' => TRUE,
+            '#hidden' => TRUE,
             '#required' => TRUE,
             '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
         ];
