@@ -14,11 +14,9 @@ class StudentActivityController extends ControllerBase {
         $user_username = $current_user->getAccountName();
         $connection = \Drupal::database();
 
-        $user_data = $connection->query("SELECT id FROM {students} WHERE username = :username", [
+        $student_id = $connection->query("SELECT id FROM {students} WHERE username = :username", [
             ':username' => $user_username
-        ])->fetchAssoc();
-
-        $student_id = $user_data['id'];
+        ])->fetchField();
 
         $user_dep_data = $connection->query("SELECT department_id FROM {students_departments} WHERE student_id = :student_id", [
             ':student_id' => $student_id
@@ -27,14 +25,10 @@ class StudentActivityController extends ControllerBase {
         $department_id = $user_dep_data['department_id'];
         $current_date = date('Y-m-d');
 
-        $query = $connection->select('student_activity', 'g')
-            ->fields('g', ['vrsta_aktivnost', 'datum_upisa', 'predmet_id'])
-            ->condition('g.department_id', $department_id)
-            ->condition('g.datum_upisa', $current_date, '>')
-            ->orderBy('datum_upisa', 'ASC')
-            ->execute();
-
-        $results = $query->fetchAll();
+        $results = $connection->query("SELECT vrsta_aktivnost, datum_upisa, predmet_id FROM {student_activity} WHERE department_id = :department_id AND datum_upisa > :current_date ORDER BY datum_upisa ASC", [
+            ':department_id' => $department_id,
+            ':current_date' => $current_date
+        ])->fetchAll();        
 
         if (empty($results)) {
             return ['#markup' => $this->t('Nemate zakazanih aktivnosti.')];

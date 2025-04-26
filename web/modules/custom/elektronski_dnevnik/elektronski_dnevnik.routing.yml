@@ -107,3 +107,13 @@ elektronski_dnevnik.student_attendance_controller:
     no_cache: 'TRUE'
   requirements:
     _custom_access: 'elektronski_dnevnik_student_access'
+
+elektronski_dnevnik.teacher_grade_controller:
+  path: '/teacher-grades'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\TeacherGradesController::viewGrades'
+    _title: 'Ispis ocena'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: 'elektronski_dnevnik_teacher_access'

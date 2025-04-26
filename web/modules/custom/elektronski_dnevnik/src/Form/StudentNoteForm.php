@@ -121,12 +121,7 @@ class StudentNoteForm extends FormBase {
       ':ime' => $class
     ])->fetchField();
 
-    $students = $connection->query("
-      SELECT s.id AS student_id, s.ime, s.prezime 
-      FROM {students} s
-      INNER JOIN {students_departments} sd ON s.id = sd.student_id
-      WHERE sd.department_id = :department_id
-    ", [
+    $students = $connection->query("SELECT s.id AS student_id, s.ime, s.prezime FROM {students} s INNER JOIN {students_departments} sd ON s.id = sd.student_id WHERE sd.department_id = :department_id", [
       ':department_id' => $depId
     ])->fetchAll();
 

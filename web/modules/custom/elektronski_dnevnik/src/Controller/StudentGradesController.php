@@ -14,16 +14,13 @@ class StudentGradesController extends ControllerBase {
         $user_username = $current_user->getAccountName();
         $connection = \Drupal::database();
 
-        $user_data = $connection->query("SELECT id FROM {students} WHERE username = :username", [
+        $student_id = $connection->query("SELECT id FROM {students} WHERE username = :username", [
             ':username' => $user_username
-        ])->fetchAssoc();
+        ])->fetchField();
 
-        $student_id = $user_data['id'];
-
-        $query = $connection->select('student_grades', 'g');
-        $query->fields('g', ['ocena', 'predmet_id']); 
-        $query->condition('student_id', $student_id);
-        $results = $query->execute()->fetchAll();
+        $results = $connection->query("SELECT ocena, predmet_id FROM {student_grades} WHERE student_id = :student_id", [
+            ':student_id' => $student_id
+        ])->fetchAll();  
 
         if (empty($results)) {
             return ['#markup' => $this->t('Nemate zabeležene ocene.')];

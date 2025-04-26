@@ -14,19 +14,13 @@ class StudentAttendanceController extends ControllerBase {
         $user_username = $current_user->getAccountName();
         $connection = \Drupal::database();
     
-        $user_data = $connection->query("SELECT id FROM {students} WHERE username = :username", [
+        $student_id = $connection->query("SELECT id FROM {students} WHERE username = :username", [
             ':username' => $user_username
-        ])->fetchAssoc();
-    
-        $student_id = $user_data['id'];
+        ])->fetchField();
 
-        $query = $connection->select('student_attendance', 'sa')
-            ->fields('sa', ['datum_upisa', 'redni_broj_casa', 'predmet_id'])
-            ->condition('sa.student_id', $student_id)
-            ->orderBy('datum_upisa', 'DESC')
-            ->execute();
-    
-        $results = $query->fetchAll();
+        $results = $connection->query("SELECT datum_upisa, redni_broj_casa, predmet_id FROM {student_attendance} WHERE student_id = :student_id ORDER BY datum_upisa DESC", [
+            ':student_id' => $student_id
+        ])->fetchAll();          
     
         if (empty($results)) {
             return ['#markup' => $this->t('Nema evidentiranih izostanaka.')];
