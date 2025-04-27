@@ -11,7 +11,6 @@ class StudentClassForm extends FormBase {
   public function getFormId() {
     return 'student_class_form';
   }
-  // Uljez
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $form['datum_upisa'] = [

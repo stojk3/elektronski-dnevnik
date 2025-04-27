@@ -116,4 +116,4 @@ elektronski_dnevnik.teacher_grade_controller:
   options:
     no_cache: 'TRUE'
   requirements:
-    _custom_access: 'elektronski_dnevnik_teacher_access'
+    _custom_access: 'elektronski_dnevnik_teacher_department_access'

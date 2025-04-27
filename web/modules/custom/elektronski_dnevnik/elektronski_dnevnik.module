@@ -53,3 +53,10 @@ function elektronski_dnevnik_teacher_access(AccountInterface $account) {
 function elektronski_dnevnik_student_access(AccountInterface $account) {
   return $account->hasRole('student') ? AccessResult::allowed() : AccessResult::forbidden();
 }
+
+/**
+ * Callback funkcija za ograničavanje pristupa.
+ */
+function elektronski_dnevnik_teacher_department_access(AccountInterface $account) {
+  return $account->hasRole('razredni_staresina') ? AccessResult::allowed() : AccessResult::forbidden();
+}
