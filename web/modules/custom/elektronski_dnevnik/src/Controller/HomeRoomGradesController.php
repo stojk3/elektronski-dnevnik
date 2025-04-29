@@ -35,7 +35,7 @@ class HomeRoomGradesController extends ControllerBase {
 
             foreach ($subjects as $subject) {
                 $subject_grades = $grades[$subject->id] ?? [];
-                $row[$subject->id] = empty($subject_grades) ? $this->t('/') : implode(', ', $subject_grades);
+                $row[$subject->id] = empty($subject_grades) ? $this->t('') : implode(', ', $subject_grades);
             }
 
             $rows[] = $row;

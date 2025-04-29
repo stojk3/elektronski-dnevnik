@@ -28,7 +28,7 @@ class TeacherGradesController extends ControllerBase {
         $semester_options = [
           '1' => 'Prvo polugodište',
           '2' => 'Drugo polugodište',
-          '3' => 'Kombinovano', // Treća opcija za kombinovano polugodište
+          '3' => 'Kombinovano',
       ];
 
       $build['form'] = [
@@ -59,23 +59,18 @@ class TeacherGradesController extends ControllerBase {
           if ($subject_id && !empty($students)) {
               $grades = [];
               if ($selected_semester == '3') {
-                // Kombinovano polugodište - uzimamo ocene iz oba polugodišta
                 $grades_1 = $this->getGrades($connection, array_keys($students), $subject_id, '1');
                 $grades_2 = $this->getGrades($connection, array_keys($students), $subject_id, '2');
-                
-                // Kombinujemo ocene, ali pazimo da ne dođe do mešanja učenika
+
                 foreach ($grades_2 as $student_id => $grade_list) {
                     if (isset($grades_1[$student_id])) {
-                        // Dodajemo ocene iz drugog polugodišta učeniku koji već ima ocene
                         $grades_1[$student_id] = array_merge($grades_1[$student_id], $grade_list);
                     } else {
-                        // Ako učenik nema ocene iz prvog polugodišta, dodajemo samo iz drugog polugodišta
                         $grades_1[$student_id] = $grade_list;
                     }
                 }
                 $grades = $grades_1;
               } else {
-                  // Normalno, samo za jedno polugodište
                   $grades = $this->getGrades($connection, array_keys($students), $subject_id, $selected_semester);
               }
             
