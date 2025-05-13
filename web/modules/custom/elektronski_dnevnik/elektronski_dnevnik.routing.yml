@@ -127,3 +127,37 @@ elektronski_dnevnik.teacher_grade_controller:
     no_cache: 'TRUE'
   requirements:
     _custom_access: 'elektronski_dnevnik_teacher_access'
+
+elektronski_dnevnik.admin_users_controller:
+  path: '/admin-users'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::listUsers'
+    _title: 'Administer Users'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer site configuration'
+
+elektronski_dnevnik.user_info:
+  path: '/admin-users/{type}/{id}/info'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::infoUser'
+    _title: 'Info korisnika'
+  requirements:
+    _permission: 'access content'
+
+elektronski_dnevnik.user_edit:
+  path: '/admin-users/{type}/{id}/edit'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::editUser'
+    _title: 'Izmeni korisnika'
+  requirements:
+    _permission: 'access content'
+
+elektronski_dnevnik.user_delete:
+  path: '/admin-users/{type}/{id}/delete'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::deleteUser'
+    _title: 'Obriši korisnika'
+  requirements:
+    _permission: 'access content'
