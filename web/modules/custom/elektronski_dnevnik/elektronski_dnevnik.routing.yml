@@ -143,6 +143,8 @@ elektronski_dnevnik.user_info:
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::infoUser'
     _title: 'Info korisnika'
+  options:
+    no_cache: 'TRUE'
   requirements:
     _permission: 'access content'
 
@@ -151,6 +153,8 @@ elektronski_dnevnik.user_edit:
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::editUser'
     _title: 'Izmeni korisnika'
+  options:
+    no_cache: 'TRUE'
   requirements:
     _permission: 'access content'
 
@@ -159,5 +163,19 @@ elektronski_dnevnik.user_delete:
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::deleteUser'
     _title: 'Obriši korisnika'
+  options:
+    no_cache: 'TRUE'
   requirements:
     _permission: 'access content'
+
+elektronski_dnevnik.user_delete_confirmed:
+  path: '/admin-users/{type}/{id}/obrisi-potvrda'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::deleteUserConfirmed'
+    _title: 'Potvrda brisanja korisnika'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'access content'
+    id: \d+
+
