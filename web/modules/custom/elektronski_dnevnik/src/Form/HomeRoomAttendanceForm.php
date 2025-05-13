@@ -17,138 +17,94 @@ class HomeRoomAttendanceForm extends FormBase {
         $connection = \Drupal::database();
         $user_username = $current_user->getAccountName();
 
-        $query = $connection->select('teachers', 't')
-        ->fields('t', ['subject_id'])
-        ->condition('t.username', $user_username, '=')
-        ->execute()
-        ->fetchCol();
-    }
-
-    public function viewGrades(Request $request = null) {
-        $request = $request ?? \Drupal::request();
-        $form = [];
-
-        $current_user = \Drupal::currentUser();
-        $user_username = $current_user->getAccountName();
-        $connection = Database::getConnection();
-
-        $teacher_id = $connection->query("SELECT id FROM {teachers} WHERE username = :username", [
-            ':username' => $user_username
-        ])->fetchField();
-
-        $department_id = $connection->query("SELECT department_id FROM {teachers_departments} WHERE teacher_id = :teacher_id", [
-            ':teacher_id' => $teacher_id
-        ])->fetchField();
-
-        $selected_semester = $request->query->get('semester') ?? '1';
-
-        $form['semester_select'] = [
-            '#type' => 'form',
-            '#method' => 'get',
-            '#action' => \Drupal::request()->getRequestUri(),
-            'semester' => [
-                '#type' => 'select',
-                '#title' => $this->t('Izaberi polugodište'),
-                '#options' => [
-                    '1' => 'Prvo polugodište',
-                    '2' => 'Drugo polugodište',
-                    '3' => 'Kombinovano',
-                ],
-                '#value' => $selected_semester,
-                '#attributes' => ['onchange' => 'this.form.submit();'],
-                '#name' => 'semester',
-            ],
-        ];
-
-        $students = $this->loadStudentsByClass($department_id);
-        $subjects = $this->loadSubjects();
-
-        $rows = [];
-        foreach ($students as $student) {
-            $grades = $this->loadGradesForStudent($student->student_id);
-            $row = [
-                'student' => $student->ime . ' ' . $student->prezime,
-            ];
-
-            $subject_averages = [];
-
-            foreach ($subjects as $subject) {
-                $subject_grades = $grades[$subject->id][$selected_semester] ?? [];
-
-                $row[$subject->id] = !empty($subject_grades) ? implode(', ', $subject_grades) : $this->t('');
-
-                if (!empty($subject_grades)) {
-                    $subject_avg = array_sum($subject_grades) / count($subject_grades);
-                    $rounded = ($subject_avg - floor($subject_avg) >= 0.5)
-                        ? ceil($subject_avg)
-                        : floor($subject_avg);
-                    $subject_averages[] = $rounded;
-                }
-            }
-
-            $row['average'] = !empty($subject_averages)
-                ? number_format(array_sum($subject_averages) / count($subject_averages), 2, ',', '.')
-                : $this->t('');
-
-            $rows[] = $row;
-        }
-
-        $header = ['student' => $this->t('Učenik')] + array_column($subjects, 'ime', 'id') + ['average' => $this->t('Prosek')];
-
-        $form['grades_table'] = [
+        $teacher_id = $this->getTeacherIdByUsername($user_username);
+        $department_id = $this->getClassId($teacher_id);
+        $students = $this->getStudents($department_id);
+        $form['students'] = [
             '#type' => 'table',
-            '#header' => $header,
-            '#rows' => $rows,
-            '#empty' => $this->t('Nema podataka.'),
+            '#header' => ['Ime i Prezime', 'Izostanci'],
+            '#empty' => t('Nema izostanaka.'),
         ];
-
+        foreach ($students as $student) {
+            $form['students'][$student->id] = [
+                'full_name' => [
+                    '#type' => 'markup',
+                    '#markup' => $student->ime . ' ' . $student->prezime,
+                ],
+                'attendance' => [
+                    '#type' => 'select',
+                    '#options' => [
+                        'present' => t('Present'),
+                        'absent' => t('Absent'),
+                        'late' => t('Late'),
+                    ],
+                ],
+            ];
+        }
+        $form['actions']['#type'] = 'actions';
+        $form['actions']['submit'] = [
+            '#type' => 'submit',
+            '#value' => t('Save Attendance'),
+        ];
         return $form;
     }
 
-    protected function loadSubjects() {
-        $connection = \Drupal::database();
-        return $connection->query("SELECT id, ime FROM {subjects}")->fetchAll();
+    public function submitForm(array &$form, FormStateInterface $form_state) {
+        $values = $form_state->getValues();
+        foreach ($values['students'] as $student_id => $attendance) {
+            $this->saveAttendance($student_id, $attendance['attendance']);
+        }
+        \Drupal::messenger()->addMessage(t('Attendance saved successfully.'));
     }
 
-    protected function loadGradesForStudent($student_id) {
+    protected function getStudents($department_id) {
         $connection = \Drupal::database();
-        $results = $connection->query("SELECT ocena, predmet_id, datum_upisa FROM {student_grades} WHERE student_id = :student_id", [
-            ':student_id' => $student_id
-        ])->fetchAll();
 
-        $grades_by_subject = [];
+        // Prvo uzmi sve student_id za dati department_id
+        $student_ids = $connection->select('students_departments', 'sd')
+            ->fields('sd', ['student_id'])
+            ->condition('sd.department_id', $department_id, '=')
+            ->execute()
+            ->fetchCol(); // fetchCol() vraća niz vrednosti iz jedne kolone
 
-        foreach ($results as $result) {
-            $semester = $this->getSemesterForGrade($result->datum_upisa);
-            if (!isset($grades_by_subject[$result->predmet_id])) {
-                $grades_by_subject[$result->predmet_id] = ['1' => [], '2' => []];
-            }
-            if ($semester === '1' || $semester === '2') {
-                $grades_by_subject[$result->predmet_id][$semester][] = $result->ocena;
-            }
+        // Ako nema studenata, vrati prazan niz
+        if (empty($student_ids)) {
+            return [];
         }
 
-        // Kombinovano sabira sve
-        foreach ($grades_by_subject as $subject_id => &$entry) {
-            $entry['3'] = array_merge($entry['1'], $entry['2']);
+        // Sada uzmi samo studente koji su u tabeli student_attendance
+        $attendance_student_ids = $connection->select('student_attendance', 'sa')
+            ->fields('sa', ['student_id'])
+            ->condition('sa.student_id', $student_ids, 'IN') // Proveri samo studente iz prvog upita
+            ->execute()
+            ->fetchCol(); // fetchCol() vraća niz student_id iz tabele student_attendance
+
+        // Ako nema studenata u tabeli student_attendance, vrati prazan niz
+        if (empty($attendance_student_ids)) {
+            return [];
         }
 
-        return $grades_by_subject;
+        // Dohvati ime i prezime iz tabele students za sve student_id koji su u tabeli student_attendance
+        return $connection->select('students', 'st')
+            ->fields('st', ['id', 'ime', 'prezime']) // Pretpostavljam da su kolone 'id', 'ime', 'prezime'
+            ->condition('st.id', $attendance_student_ids, 'IN') // Koristi IN za niz student_id
+            ->execute()
+            ->fetchAll();
     }
 
-    protected function loadStudentsByClass($department_id) {
+    protected function getClassId($teacher_id) {
         $connection = \Drupal::database();
-        return $connection->query("SELECT s.id AS student_id, s.ime, s.prezime FROM {students} s INNER JOIN {students_departments} sd ON s.id = sd.student_id WHERE sd.department_id = :department_id", [
-            ':department_id' => $department_id
-        ])->fetchAll();
+        return $connection->select('teachers_departments', 't')
+            ->fields('t', ['department_id'])
+            ->condition('t.teacher_id', $teacher_id, '=')
+            ->execute()
+            ->fetchField();
     }
 
-    private function getSemesterForGrade($datum) {
-        if ($datum >= '2024-09-01' && $datum <= '2024-12-24') {
-            return '1';
-        } elseif ($datum >= '2025-01-15' && $datum <= '2025-06-24') {
-            return '2';
-        }
-        return '0';
+    protected function getTeacherIdByUsername($user_username) {
+        $connection = \Drupal::database();
+        return $connection->query("SELECT id FROM {teachers} WHERE username = :username", [
+          ':username' => $user_username
+        ])->fetchField();
     }
 }

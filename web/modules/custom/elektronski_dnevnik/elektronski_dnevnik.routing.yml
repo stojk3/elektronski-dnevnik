@@ -161,3 +161,11 @@ elektronski_dnevnik.user_delete:
     _title: 'Obriši korisnika'
   requirements:
     _permission: 'access content'
+
+elektronski_dnevnik.homeroom_attendance_form:
+  path: '/homeroom-attendance'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\HomeRoomAttendanceForm'
+    _title: 'Pregled izostanaka'
+  requirements:
+    _custom_access: 'elektronski_dnevnik_teacher_access'
