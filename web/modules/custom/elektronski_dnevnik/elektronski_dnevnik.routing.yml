@@ -167,7 +167,7 @@ elektronski_dnevnik.user_delete:
     no_cache: 'TRUE'
   requirements:
     _permission: 'access content'
-
+    
 elektronski_dnevnik.user_delete_confirmed:
   path: '/admin-users/{type}/{id}/obrisi-potvrda'
   defaults:
@@ -179,3 +179,10 @@ elektronski_dnevnik.user_delete_confirmed:
     _permission: 'access content'
     id: \d+
 
+  elektronski_dnevnik.homeroom_attendance_form:
+  path: '/homeroom-attendance'
+  defaults:
+    _form: '\Drupal\elektronski_dnevnik\Form\HomeRoomAttendanceForm'
+    _title: 'Pregled izostanaka'
+  requirements:
+    _custom_access: 'elektronski_dnevnik_teacher_access'
