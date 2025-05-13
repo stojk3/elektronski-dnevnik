@@ -231,7 +231,7 @@ public function editUser($type, $id) {
       '#type' => 'container',
       'view' => [
         '#type' => 'link',
-        '#title' => $this->t('View'),
+        '#title' => $this->t('Informacije'),
         '#url' => $info_url,
         '#attributes' => [
           'style' => $button_style . 'background-color:#3498db;',
@@ -239,7 +239,7 @@ public function editUser($type, $id) {
       ],
       'edit' => [
         '#type' => 'link',
-        '#title' => $this->t('Edit'),
+        '#title' => $this->t('Izmeni'),
         '#url' => $edit_url,
         '#attributes' => [
           'style' => $button_style . 'background-color:#f39c12;',
@@ -247,7 +247,7 @@ public function editUser($type, $id) {
       ],
       'delete' => [
         '#type' => 'link',
-        '#title' => $this->t('Delete'),
+        '#title' => $this->t('Obriši'),
         '#url' => $delete_url,
         '#attributes' => [
           'style' => $button_style . 'background-color:#e74c3c;',
