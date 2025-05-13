@@ -2,7 +2,7 @@ elektronski_dnevnik.login:
   path: '/user-login'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\UserLoginForm'
-    _title: 'User Login'
+    _title: 'Uloguj se'
   requirements:
     _permission: 'access content'
 
@@ -132,7 +132,7 @@ elektronski_dnevnik.admin_users_controller:
   path: '/admin-users'
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::listUsers'
-    _title: 'Administer Users'
+    _title: 'Administracija korisnika'
   options:
     no_cache: 'TRUE'
   requirements:
@@ -142,21 +142,21 @@ elektronski_dnevnik.user_info:
   path: '/admin-users/{type}/{id}/info'
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::infoUser'
-    _title: 'Info korisnika'
+    _title: 'Informacije korisnika'
   options:
     no_cache: 'TRUE'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
 
 elektronski_dnevnik.user_edit:
   path: '/admin-users/{type}/{id}/edit'
   defaults:
     _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::editUser'
-    _title: 'Izmeni korisnika'
+    _title: 'Izmeni informacije korisnika'
   options:
     no_cache: 'TRUE'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
 
 elektronski_dnevnik.user_delete:
   path: '/admin-users/{type}/{id}/delete'
@@ -166,7 +166,7 @@ elektronski_dnevnik.user_delete:
   options:
     no_cache: 'TRUE'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
     
 elektronski_dnevnik.user_delete_confirmed:
   path: '/admin-users/{type}/{id}/obrisi-potvrda'
@@ -176,7 +176,7 @@ elektronski_dnevnik.user_delete_confirmed:
   options:
     no_cache: 'TRUE'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
     id: \d+
 
 elektronski_dnevnik.homeroom_attendance_form:
