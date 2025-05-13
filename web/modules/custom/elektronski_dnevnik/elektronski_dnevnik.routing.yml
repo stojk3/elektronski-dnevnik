@@ -179,7 +179,7 @@ elektronski_dnevnik.user_delete_confirmed:
     _permission: 'access content'
     id: \d+
 
-  elektronski_dnevnik.homeroom_attendance_form:
+elektronski_dnevnik.homeroom_attendance_form:
   path: '/homeroom-attendance'
   defaults:
     _form: '\Drupal\elektronski_dnevnik\Form\HomeRoomAttendanceForm'

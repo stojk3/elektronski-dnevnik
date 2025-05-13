@@ -5,106 +5,131 @@ namespace Drupal\elektronski_dnevnik\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Messenger\MessengerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HomeRoomAttendanceForm extends FormBase {
 
-    public function getFormId() {
-        return 'homeroom_attendance_form';
+  /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    $instance = parent::create($container);
+    $instance->messenger = $container->get('messenger');
+    return $instance;
+  }
+
+  public function getFormId() {
+    return 'homeroom_attendance_form';
+  }
+
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $current_user = \Drupal::currentUser();
+    $user_username = $current_user->getAccountName();
+
+    $teacher_id = $this->getTeacherIdByUsername($user_username);
+    $department_id = $this->getDepartmentIdByTeacherId($teacher_id);
+    $students = $this->getStudents($department_id);
+
+    $form['students'] = [
+      '#type' => 'table',
+      '#header' => ['Ime i Prezime', 'Predmet', 'Datum', 'Redni broj časa', 'Izostanci'],
+      '#empty' => t('Nema izostanaka.'),
+    ];
+
+    foreach ($students as $student) {
+      $row_id = $student->student_id . '_' . str_replace('-', '', $student->datum_upisa) . '_' . $student->redni_broj_casa . '_' . $student->predmet_id;
+      $form['students'][$row_id] = [
+        'full_name' => [
+          '#type' => 'markup',
+          '#markup' => $student->ime . ' ' . $student->prezime,
+        ],
+        'subject' => [
+          '#type' => 'markup',
+          '#markup' => $student->predmet,
+        ],
+        'date' => [
+          '#type' => 'markup',
+          '#markup' => $student->datum_upisa
+        ],
+        'class_number' => [
+          '#type' => 'markup',
+          '#markup' => $student->redni_broj_casa,
+        ],
+        'attendance' => [
+          '#type' => 'select',
+          '#options' => [
+            'present' => t('Present'),
+            'absent' => t('Absent'),
+            'late' => t('Late'),
+          ],
+        ],
+      ];
     }
 
-    public function buildForm(array $form, FormStateInterface $form_state) {
-        $current_user = \Drupal::currentUser();
-        $connection = \Drupal::database();
-        $user_username = $current_user->getAccountName();
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => t('Save Attendance'),
+    ];
 
-        $teacher_id = $this->getTeacherIdByUsername($user_username);
-        $department_id = $this->getClassId($teacher_id);
-        $students = $this->getStudents($department_id);
-        $form['students'] = [
-            '#type' => 'table',
-            '#header' => ['Ime i Prezime', 'Izostanci'],
-            '#empty' => t('Nema izostanaka.'),
-        ];
-        foreach ($students as $student) {
-            $form['students'][$student->id] = [
-                'full_name' => [
-                    '#type' => 'markup',
-                    '#markup' => $student->ime . ' ' . $student->prezime,
-                ],
-                'attendance' => [
-                    '#type' => 'select',
-                    '#options' => [
-                        'present' => t('Present'),
-                        'absent' => t('Absent'),
-                        'late' => t('Late'),
-                    ],
-                ],
-            ];
-        }
-        $form['actions']['#type'] = 'actions';
-        $form['actions']['submit'] = [
-            '#type' => 'submit',
-            '#value' => t('Save Attendance'),
-        ];
-        return $form;
+    return $form;
+  }
+
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    foreach ($values['students'] as $student_id => $attendance) {
+      $this->saveAttendance($student_id, $attendance['attendance']);
     }
+    $this->messenger->addMessage(t('Attendance saved successfully.'));
+  }
 
-    public function submitForm(array &$form, FormStateInterface $form_state) {
-        $values = $form_state->getValues();
-        foreach ($values['students'] as $student_id => $attendance) {
-            $this->saveAttendance($student_id, $attendance['attendance']);
-        }
-        \Drupal::messenger()->addMessage(t('Attendance saved successfully.'));
-    }
+  protected function getStudents($department_id) {
+    $connection = \Drupal::database();
 
-    protected function getStudents($department_id) {
-        $connection = \Drupal::database();
+    $query = $connection->select('student_attendance', 'sa');
+    $query->fields('sa', ['student_id', 'datum_upisa', 'redni_broj_casa', 'predmet_id']);
 
-        // Prvo uzmi sve student_id za dati department_id
-        $student_ids = $connection->select('students_departments', 'sd')
-            ->fields('sd', ['student_id'])
-            ->condition('sd.department_id', $department_id, '=')
-            ->execute()
-            ->fetchCol(); // fetchCol() vraća niz vrednosti iz jedne kolone
+    $query->innerJoin('students', 'st', 'sa.student_id = st.id');
+    $query->fields('st', ['ime', 'prezime']);
 
-        // Ako nema studenata, vrati prazan niz
-        if (empty($student_ids)) {
-            return [];
-        }
+    $query->innerJoin('subjects', 'p', 'sa.predmet_id = p.id');
+    $query->addField('p', 'ime', 'predmet');
 
-        // Sada uzmi samo studente koji su u tabeli student_attendance
-        $attendance_student_ids = $connection->select('student_attendance', 'sa')
-            ->fields('sa', ['student_id'])
-            ->condition('sa.student_id', $student_ids, 'IN') // Proveri samo studente iz prvog upita
-            ->execute()
-            ->fetchCol(); // fetchCol() vraća niz student_id iz tabele student_attendance
+    $query->innerJoin('students_departments', 'sd', 'st.id = sd.student_id');
+    $query->condition('sd.department_id', $department_id, '=');
 
-        // Ako nema studenata u tabeli student_attendance, vrati prazan niz
-        if (empty($attendance_student_ids)) {
-            return [];
-        }
+    $result = $query->execute()->fetchAll();
+    return $result;
+  }
 
-        // Dohvati ime i prezime iz tabele students za sve student_id koji su u tabeli student_attendance
-        return $connection->select('students', 'st')
-            ->fields('st', ['id', 'ime', 'prezime']) // Pretpostavljam da su kolone 'id', 'ime', 'prezime'
-            ->condition('st.id', $attendance_student_ids, 'IN') // Koristi IN za niz student_id
-            ->execute()
-            ->fetchAll();
-    }
+  protected function getTeacherIdByUsername($user_username) {
+    $connection = \Drupal::database();
+    return $connection->query("SELECT id FROM {teachers} WHERE username = :username", [
+      ':username' => $user_username,
+    ])->fetchField();
+  }
 
-    protected function getClassId($teacher_id) {
-        $connection = \Drupal::database();
-        return $connection->select('teachers_departments', 't')
-            ->fields('t', ['department_id'])
-            ->condition('t.teacher_id', $teacher_id, '=')
-            ->execute()
-            ->fetchField();
-    }
+  protected function getDepartmentIdByTeacherId($teacher_id) {
+    $connection = \Drupal::database();
+    $query = $connection->select('teachers_departments', 'td');
+    $query->fields('td', ['department_id']);
+    $query->condition('td.teacher_id', $teacher_id, '=');
+    return $query->execute()->fetchField();
+  }
 
-    protected function getTeacherIdByUsername($user_username) {
-        $connection = \Drupal::database();
-        return $connection->query("SELECT id FROM {teachers} WHERE username = :username", [
-          ':username' => $user_username
-        ])->fetchField();
-    }
+  protected function saveAttendance($student_id, $attendance_status) {
+    $connection = \Drupal::database();
+    $connection->merge('student_attendance')
+      ->key(['student_id' => $student_id])
+      ->fields(['attendance_status' => $attendance_status])
+      ->execute();
+  }
 }
