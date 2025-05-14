@@ -5,26 +5,8 @@ namespace Drupal\elektronski_dnevnik\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Database;
-use Drupal\Core\Messenger\MessengerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HomeRoomAttendanceForm extends FormBase {
-
-  /**
-   * The messenger service.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  protected $messenger;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->messenger = $container->get('messenger');
-    return $instance;
-  }
 
   public function getFormId() {
     return 'homeroom_attendance_form';
@@ -88,7 +70,7 @@ class HomeRoomAttendanceForm extends FormBase {
     foreach ($values['students'] as $student_id => $attendance) {
       $this->saveAttendance($student_id, $attendance['attendance']);
     }
-    $this->messenger->addMessage(t('Attendance saved successfully.'));
+    \Drupal::messenger()->addMessage(t('Attendance saved successfully.'));
   }
 
   protected function getStudents($department_id) {
