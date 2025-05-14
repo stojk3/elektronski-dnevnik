@@ -12,9 +12,7 @@ use Twig\Sandbox\SecurityNotAllowedFunctionError;
 use Twig\Source;
 use Twig\Template;
 
-
-/* input.html.twig */
-
+/* themes/contrib/bootstrap3/templates/input/input.html.twig */
 class __TwigTemplate_aa39cc70ccbdffc27fd9540bffec0799 extends Template
 {
     private $source;
@@ -108,7 +106,7 @@ class __TwigTemplate_aa39cc70ccbdffc27fd9540bffec0799 extends Template
 
     public function getTemplateName()
     {
-        return "input.html.twig";
+        return "themes/contrib/bootstrap3/templates/input/input.html.twig";
     }
 
     public function isTraitable()
@@ -167,8 +165,7 @@ class __TwigTemplate_aa39cc70ccbdffc27fd9540bffec0799 extends Template
 
   {{ children }}
 {% endapply %}
-
-", "input.html.twig", "themes/contrib/bootstrap3/templates/input/input.html.twig");
+", "themes/contrib/bootstrap3/templates/input/input.html.twig", "/var/www/web/themes/contrib/bootstrap3/templates/input/input.html.twig");
     }
     
     public function checkSecurity()
