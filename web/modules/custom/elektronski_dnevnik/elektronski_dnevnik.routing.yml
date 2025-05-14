@@ -151,12 +151,11 @@ elektronski_dnevnik.user_info:
 elektronski_dnevnik.user_edit:
   path: '/admin-users/{type}/{id}/edit'
   defaults:
-    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::editUser'
-    _title: 'Izmeni informacije korisnika'
-  options:
-    no_cache: 'TRUE'
+    _form: '\Drupal\elektronski_dnevnik\Form\UserEditForm'
+    _title: 'Izmeni korisnika'
   requirements:
     _permission: 'administer site configuration'
+    id: \d+
 
 elektronski_dnevnik.user_delete:
   path: '/admin-users/{type}/{id}/delete'

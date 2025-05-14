@@ -142,36 +142,6 @@ public function listUsers() {
   ];
 }
 
-
-public function editUser($type, $id) {
-  $connection = \Drupal::database();
-  $table = $type === 'student' ? 'students' : 'teachers';
-
-  $user = $connection->select($table, 'u')
-    ->fields('u')
-    ->condition('id', $id)
-    ->execute()
-    ->fetchAssoc();
-
-  if (!$user) {
-    return ['#markup' => 'Korisnik nije pronađen.'];
-  }
-
-  $form_action = '/custom-edit-submit/' . $type . '/' . $id;
-
-  $form = '<form method="post" action="' . $form_action . '">';
-  $form .= 'Email: <input type="text" name="email" value="' . htmlspecialchars($user['email']) . '"><br>';
-  $form .= 'Ime: <input type="text" name="ime" value="' . htmlspecialchars($user['ime']) . '"><br>';
-  $form .= 'Prezime: <input type="text" name="prezime" value="' . htmlspecialchars($user['prezime']) . '"><br>';
-  $form .= '<button type="submit">Sačuvaj</button>';
-  $form .= '</form>';
-
-  return [
-    '#type' => 'markup',
-    '#markup' => $form,
-  ];
-}
-
   public function deleteUser($type, $id) {
     $connection = \Drupal::database();
     $table = $type === 'student' ? 'students' : 'teachers';
@@ -242,7 +212,7 @@ public function editUser($type, $id) {
         '#title' => $this->t('Izmeni'),
         '#url' => $edit_url,
         '#attributes' => [
-          'style' => $button_style . 'background-color:#f39c12;',
+          'style' => $button_style . 'background-color:#f39c12;', // narandžasto
         ],
       ],
       'delete' => [
