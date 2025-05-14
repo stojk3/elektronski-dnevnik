@@ -51,7 +51,7 @@ class AssignTeacherForm extends FormBase {
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => 'Dodeli',
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['class' => ['btn-success']],
     ];
 
     return $form;

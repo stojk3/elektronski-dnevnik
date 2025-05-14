@@ -67,7 +67,7 @@ class StudentActivityForm extends FormBase {
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['class' => ['btn-success']],
       '#value' => 'Snimi',
     ];
 

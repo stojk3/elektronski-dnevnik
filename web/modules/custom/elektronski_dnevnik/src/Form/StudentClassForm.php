@@ -153,7 +153,7 @@ class StudentClassForm extends FormBase {
     $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => 'Snimi',
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['class' => ['btn-success']],
     ];
 
     $form['#attached']['html_head'][] = [
