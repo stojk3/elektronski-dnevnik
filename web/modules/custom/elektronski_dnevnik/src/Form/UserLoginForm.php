@@ -37,7 +37,7 @@ class UserLoginForm extends FormBase {
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['class' => ['btn-success']],
       '#value' => $this->t('Login'),
     ];
 

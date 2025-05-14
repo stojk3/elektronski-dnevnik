@@ -31,6 +31,7 @@ class DepartmentRegisterForm extends FormBase {
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => 'Registruj',
+      '#attributes' => ['class' => ['btn-success']],
     ];
 
     return $form;

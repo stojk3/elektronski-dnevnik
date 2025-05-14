@@ -22,7 +22,7 @@ class HomeRoomAttendanceForm extends FormBase {
 
     $form['students'] = [
       '#type' => 'table',
-      '#header' => ['Ime i Prezime', 'Predmet', 'Datum', 'Redni broj časa', 'Izostanci'],
+      '#header' => ['Ime i Prezime', 'Predmet', 'Datum', 'Redni broj časa', 'Opravdano/Neopravdano'],
       '#empty' => t('Nema izostanaka.'),
     ];
 
@@ -45,12 +45,12 @@ class HomeRoomAttendanceForm extends FormBase {
           '#type' => 'markup',
           '#markup' => $student->redni_broj_casa,
         ],
-        'attendance' => [
+        'definisano' => [
           '#type' => 'select',
           '#options' => [
-            'present' => t('Present'),
-            'absent' => t('Absent'),
-            'late' => t('Late'),
+            'nedefinisano' => t('Nedefinisano'),
+            'opravdano' => t('Opravdano'),
+            'neopravdano' => t('Neopravdano'),
           ],
         ],
       ];
@@ -59,7 +59,8 @@ class HomeRoomAttendanceForm extends FormBase {
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => t('Save Attendance'),
+      '#value' => t('Snimi'),
+      '#attributes' => ['class' => ['btn-success']],
     ];
 
     return $form;
@@ -67,10 +68,37 @@ class HomeRoomAttendanceForm extends FormBase {
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    foreach ($values['students'] as $student_id => $attendance) {
-      $this->saveAttendance($student_id, $attendance['attendance']);
+
+    if (is_array($values['students'])) {
+      $changes_made = FALSE;
+      foreach ($values['students'] as $row_id => $student_data) {
+        if ($student_data['definisano'] != 'nedefinisano') {
+          $ids = explode('_', $row_id);
+          $student_id = $ids[0];
+          $datum_upisa = $ids[1];
+          $redni_broj_casa = $ids[2];
+          $predmet_id = $ids[3];
+
+          $definisano_status = $student_data['definisano'];
+
+          $this->saveAttendanceDefinisano(
+            $student_id,
+            $datum_upisa,
+            $redni_broj_casa,
+            $predmet_id,
+            $definisano_status
+          );
+          $changes_made = TRUE;
+        }
+      }
+      if ($changes_made) {
+        \Drupal::messenger()->addMessage(t('Izostanci uspešno ažurirani.'));
+      } else {
+        \Drupal::messenger()->addMessage(t('Nema nikakvih promena.'));
+      }
+    } else {
+      \Drupal::messenger()->addMessage(t('Nema nikakvih promena.'));
     }
-    \Drupal::messenger()->addMessage(t('Attendance saved successfully.'));
   }
 
   protected function getStudents($department_id) {
@@ -87,6 +115,7 @@ class HomeRoomAttendanceForm extends FormBase {
 
     $query->innerJoin('students_departments', 'sd', 'st.id = sd.student_id');
     $query->condition('sd.department_id', $department_id, '=');
+    $query->condition('sa.definisanost', 'nedefinisano', '=');
 
     $result = $query->execute()->fetchAll();
     return $result;
@@ -105,6 +134,23 @@ class HomeRoomAttendanceForm extends FormBase {
     $query->fields('td', ['department_id']);
     $query->condition('td.teacher_id', $teacher_id, '=');
     return $query->execute()->fetchField();
+  }
+
+  protected function saveAttendanceDefinisano(
+    $student_id,
+    $datum_upisa,
+    $redni_broj_casa,
+    $predmet_id,
+    $definisano_status
+  ) {
+    $connection = \Drupal::database();
+    $connection->update('student_attendance')
+      ->fields(['definisanost' => $definisano_status])
+      ->condition('student_id', $student_id, '=')
+      ->condition('datum_upisa', $datum_upisa, '=')
+      ->condition('redni_broj_casa', $redni_broj_casa, '=')
+      ->condition('predmet_id', $predmet_id, '=')
+      ->execute();
   }
 
   protected function saveAttendance($student_id, $attendance_status) {
