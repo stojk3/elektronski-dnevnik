@@ -18,13 +18,17 @@ class StudentAttendanceController extends ControllerBase {
             ':username' => $user_username
         ])->fetchField();
 
-        $results = $connection->query("SELECT datum_upisa, redni_broj_casa, predmet_id FROM {student_attendance} WHERE student_id = :student_id ORDER BY datum_upisa DESC", [
+        $results = $connection->query("SELECT datum_upisa, redni_broj_casa, predmet_id, definisanost FROM {student_attendance} WHERE student_id = :student_id ORDER BY datum_upisa DESC", [
             ':student_id' => $student_id
         ])->fetchAll();          
     
         if (empty($results)) {
             return ['#markup' => $this->t('Nema evidentiranih izostanaka.')];
         }
+
+        $opravdano_count = 0;
+        $neopravdano_count = 0;
+        $nedefinisano_count = 0;
 
         $attendance_by_date = [];
         foreach ($results as $record) {
@@ -35,27 +39,39 @@ class StudentAttendanceController extends ControllerBase {
             $attendance_by_date[$record->datum_upisa][] = [
                 'redni_broj_casa' => $record->redni_broj_casa,
                 'predmet' => $subject_name,
+                'definisanost' => $record->definisanost,
             ];
+
+            switch ($record->definisanost) {
+                case 'opravdano':
+                    $opravdano_count++;
+                    break;
+                case 'neopravdano':
+                    $neopravdano_count++;
+                    break;
+                default:
+                    $nedefinisano_count++;
+                    break;
+            }
         }
 
         $rows = [];
         foreach ($attendance_by_date as $date => $classes) {
-            $class_info = '';
             foreach ($classes as $class) {
-                $class_info .= $class['predmet'] . ' - ' . $class['redni_broj_casa'] . '. čas<br>';
+                $rows[] = [
+                    'datum' => date('d-m-Y', strtotime($date)),
+                    'predmet' => $class['predmet'],
+                    'cas' => $class['redni_broj_casa'],
+                    'definisanost' => ucfirst($class['definisanost']),
+                ];
             }
-    
-            $rows[] = [
-                'datum' => $date,
-                'prisustvo' => [
-                    'data' => ['#markup' => $class_info],
-                ],
-            ];
         }
     
         $header = [
             'datum' => $this->t('Datum'),
-            'prisustvo' => $this->t('Izostali časovi'),
+            'predmet' => $this->t('Predmet'),
+            'cas' => $this->t('Redni broj časa'),
+            'definisanost' => $this->t('Opravdano/Neopravdano'),
         ];
     
         return [
@@ -65,6 +81,15 @@ class StudentAttendanceController extends ControllerBase {
                 '#header' => $header,
                 '#rows' => $rows,
                 '#empty' => $this->t('Nema evidentiranih prisustava.'),
+            ],
+            'justified_absences' => [
+                '#markup' => '<p><strong>' . $this->t('Broj opravdanih izostanaka: @count', ['@count' => $opravdano_count]) . '</strong></p>',
+            ],
+            'unjustified_absences' => [
+                '#markup' => '<p><strong>' . $this->t('Broj neopravdanih izostanaka: @count', ['@count' => $neopravdano_count]) . '</strong></p>',
+            ],
+            'undefined_absences' => [
+                '#markup' => '<p><strong>' . $this->t('Broj nedefinisanih izostanaka: @count', ['@count' => $nedefinisano_count]) . '</strong></p>',
             ],
             'total_absences' => [
                 '#markup' => '<p><strong>' . $this->t('Ukupan broj izostanaka: @count', ['@count' => count($results)]) . '</strong></p>',
