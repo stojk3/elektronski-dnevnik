@@ -44,10 +44,16 @@ class UserEditForm extends FormBase {
 
     // First, check the students table
     $query = $this->database->select('students', 's')
-        ->fields('s')
-        ->condition('id', $id)
-        ->condition('ime', $name)
-        ->condition('prezime', $surname);
+        ->fields('s');
+    if (!empty($id)) {
+      $query->condition('id', $id);
+    }
+    if (!empty($name)) {
+      $query->condition('ime', $name);
+    }
+    if (!empty($surname)) {
+      $query->condition('prezime', $surname);
+    }
     $result = $query->execute()->fetchAssoc();
 
     if ($result) {
@@ -58,10 +64,16 @@ class UserEditForm extends FormBase {
     // If not found in students, check the teachers table
     if (!$record) {
       $query = $this->database->select('teachers', 't')
-        ->fields('t')
-        ->condition('id', $id)
-        ->condition('ime', $name)
-        ->condition('prezime', $surname);
+        ->fields('t');
+      if (!empty($id)) {
+        $query->condition('id', $id);
+      }
+      if (!empty($name)) {
+        $query->condition('ime', $name);
+      }
+      if (!empty($surname)) {
+        $query->condition('prezime', $surname);
+      }
       $result = $query->execute()->fetchAssoc();
 
       if ($result) {
@@ -73,10 +85,16 @@ class UserEditForm extends FormBase {
     // If not found in teachers, check the users field data (administrators)
     if (!$record) {
       $query = $this->database->select('users_field_data', 'u')
-        ->fields('u')
-        ->condition('uid', $id)  // Corrected to uid for the users table
-        ->condition('name', $name)
-        ->condition('mail', $surname); // If surname is to be matched with email, this is fine
+        ->fields('u');
+      if (!empty($id)) {
+        $query->condition('uid', $id);  // Corrected to uid for the users table
+      }
+      if (!empty($name)) {
+        $query->condition('name', $name);
+      }
+      if (!empty($surname)) {
+        $query->condition('mail', $surname); // If surname is to be matched with email, this is fine
+      }
       $result = $query->execute()->fetchAssoc();
 
       if ($result) {
@@ -132,12 +150,15 @@ class UserEditForm extends FormBase {
     switch ($type) {
       case 'student':
         $table = 'students';
+        $id_field = 'id';
         break;
       case 'teacher':
         $table = 'teachers';
+        $id_field = 'id';
         break;
       case 'administrator':
         $table = 'users_field_data';
+        $id_field = 'uid';
         break;
       default:
         \Drupal::messenger()->addError('Nepoznat tip korisnika.');
@@ -159,7 +180,7 @@ class UserEditForm extends FormBase {
     // Update database
     $this->database->update($table)
       ->fields($fields)
-      ->condition('id', $id)
+      ->condition($id_field, $id)
       ->execute();
 
     \Drupal::messenger()->addMessage("Uspešno izmenjen $type sa ID-em: $id.");

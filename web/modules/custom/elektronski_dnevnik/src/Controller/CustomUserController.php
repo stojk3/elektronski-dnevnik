@@ -117,38 +117,72 @@ public function listUsers() {
 }
 
   public function infoUser($type, $id) {
-  $connection = \Drupal::database();
-  $table = $type === 'student' ? 'students' : 'teachers';
+    $connection = \Drupal::database();
+    $table = null;
 
-  $user = $connection->select($table, 'u')
-    ->fields('u')
-    ->condition('id', $id)
-    ->execute()
-    ->fetchAssoc();
+    switch ($type) {
+      case 'student':
+        $table = 'students';
+        $id_field = 'id';
+        break;
+      case 'teacher':
+        $table = 'teachers';
+        $id_field = 'id';
+        break;
+      case 'admin':
+        $table = 'users_field_data';
+        $id_field = 'uid';
+        break;
+      default:
+        return ['#markup' => 'Nepoznat tip korisnika.'];
+    }
 
-  if (!$user) {
-    return ['#markup' => 'Korisnik nije pronađen.'];
+    $user = $connection->select($table, 'u')
+      ->fields('u')
+      ->condition($id_field, $id)
+      ->execute()
+      ->fetchAssoc();
+
+    if (!$user) {
+      return ['#markup' => 'Korisnik nije pronađen.'];
+    }
+
+    $output = '<ul>';
+    foreach ($user as $key => $value) {
+      $output .= '<li><strong>' . ucfirst($key) . ':</strong> ' . $value . '</li>';
+    }
+    $output .= '</ul>';
+
+    return [
+      '#type' => 'markup',
+      '#markup' => $output,
+    ];
   }
-
-  $output = '<ul>';
-  foreach ($user as $key => $value) {
-    $output .= '<li><strong>' . ucfirst($key) . ':</strong> ' . $value . '</li>';
-  }
-  $output .= '</ul>';
-
-  return [
-    '#type' => 'markup',
-    '#markup' => $output,
-  ];
-}
 
   public function deleteUser($type, $id) {
     $connection = \Drupal::database();
-    $table = $type === 'student' ? 'students' : 'teachers';
+    $table = null;
+
+    switch ($type) {
+      case 'student':
+        $table = 'students';
+        $id_field = 'id';
+        break;
+      case 'teacher':
+        $table = 'teachers';
+        $id_field = 'id';
+        break;
+      case 'admin':
+        $table = 'users_field_data';
+        $id_field = 'uid';
+        break;
+      default:
+        return ['#markup' => 'Nepoznat tip korisnika.'];
+    }
 
     $user = $connection->select($table, 'u')
       ->fields('u', ['ime', 'prezime'])
-      ->condition('id', $id)
+      ->condition($id_field, $id)
       ->execute()
       ->fetchAssoc();
 
@@ -174,20 +208,38 @@ public function listUsers() {
   }
 
   public function deleteUserConfirmed($type, $id) {
-  $connection = \Drupal::database();
-  $table = $type === 'student' ? 'students' : 'teachers';
+    $connection = \Drupal::database();
+    $table = null;
 
-  try {
-    $connection->delete($table)
-      ->condition('id', $id)
-      ->execute();
-    \Drupal::messenger()->addMessage('Korisnik je uspešno obrisan.');
-  } catch (\Exception $e) {
-    \Drupal::messenger()->addError('Korisnik ne može biti obrisan zbog povezanih podataka.');
+    switch ($type) {
+      case 'student':
+        $table = 'students';
+        $id_field = 'id';
+        break;
+      case 'teacher':
+        $table = 'teachers';
+        $id_field = 'id';
+        break;
+      case 'admin':
+        $table = 'users_field_data';
+        $id_field = 'uid';
+        break;
+      default:
+        \Drupal::messenger()->addError('Nepoznat tip korisnika.');
+        return $this->redirect('elektronski_dnevnik.user_info');
+    }
+
+    try {
+      $connection->delete($table)
+        ->condition($id_field, $id)
+        ->execute();
+      \Drupal::messenger()->addMessage('Korisnik je uspešno obrisan.');
+    } catch (\Exception $e) {
+      \Drupal::messenger()->addError('Korisnik ne može biti obrisan zbog povezanih podataka.');
+    }
+
+    return $this->redirect('elektronski_dnevnik.user_info');
   }
-
-  return $this->redirect('elektronski_dnevnik.user_info');
-}
 
   private function buildActionLinks($type, $id) {
   $info_url = Url::fromRoute('elektronski_dnevnik.user_info', ['type' => $type, 'id' => $id]);
