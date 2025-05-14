@@ -41,8 +41,8 @@ class StudentActivityController extends ControllerBase {
             ])->fetchField();
 
             $rows[] = [
-                'datum' => $row->datum_upisa,
-                'tip_aktivnosti' => $row->vrsta_aktivnost,
+                'datum' => date('d-m-Y', strtotime($row->datum_upisa)),
+                'tip_aktivnosti' => ucfirst($row->vrsta_aktivnost),
                 'predmet' => $subject_name,
             ];
         }
