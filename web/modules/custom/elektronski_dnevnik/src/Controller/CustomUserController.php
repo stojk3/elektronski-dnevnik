@@ -12,9 +12,7 @@ class CustomUserController extends ControllerBase {
 public function listUsers() {
   $connection = Database::getConnection();
 
-  //tabela studenti
   $student_header = [
-    'id' => 'ID',
     'name' => 'Ime i prezime',
     'email' => 'Email',
     'actions' => 'Akcije',
@@ -28,16 +26,13 @@ public function listUsers() {
 
   foreach ($students as $student) {
     $student_rows[] = [
-      'id' => $student->id,
       'name' => $student->ime . ' ' . $student->prezime,
       'email' => $student->email,
       'actions' => $this->buildActionLinks('student', $student->id),
     ];
   }
 
-  //tabela profesori
   $teacher_header = [
-    'id' => 'ID',
     'name' => 'Ime i prezime',
     'email' => 'Email',
     'actions' => 'Akcije',
@@ -51,37 +46,9 @@ public function listUsers() {
 
   foreach ($teachers as $teacher) {
     $teacher_rows[] = [
-      'id' => $teacher->id,
       'name' => $teacher->ime . ' ' . $teacher->prezime,
       'email' => $teacher->email,
       'actions' => $this->buildActionLinks('teacher', $teacher->id),
-    ];
-  }
-
-  //tabela admina
-  $admin_header = [
-    'id' => 'ID',
-    'name' => 'Korisničko ime',
-    'email' => 'Email',
-    'actions' => 'Akcije',
-  ];
-
-  $admin_rows = [];
-
-  $admin_query = $connection->select('users_field_data', 'u')
-    ->fields('u', ['uid', 'name', 'mail']);
-  $admin_query->join('user__roles', 'r', 'u.uid = r.entity_id');
-  $admin_query->condition('r.roles_target_id', 'administrator');
-  $admin_query->condition('u.status', 1); // samo aktivni
-
-  $admins = $admin_query->execute()->fetchAll();
-
-  foreach ($admins as $admin) {
-    $admin_rows[] = [
-      'id' => $admin->uid,
-      'name' => $admin->name,
-      'email' => $admin->mail,
-      'actions' => $this->buildActionLinks('admin', $admin->uid),
     ];
   }
 
@@ -104,15 +71,6 @@ public function listUsers() {
       '#rows' => $teacher_rows,
       '#empty' => 'Nema profesora u bazi.',
     ],
-    [
-    '#markup' => '<h2>Administratori</h2>',
-    ],
-    [
-    '#type' => 'table',
-    '#header' => $admin_header,
-    '#rows' => $admin_rows,
-    '#empty' => 'Nema administratora u sistemu.',
-    ],
   ];
 }
 
@@ -128,10 +86,6 @@ public function listUsers() {
       case 'teacher':
         $table = 'teachers';
         $id_field = 'id';
-        break;
-      case 'admin':
-        $table = 'users_field_data';
-        $id_field = 'uid';
         break;
       default:
         return ['#markup' => 'Nepoznat tip korisnika.'];
@@ -149,96 +103,27 @@ public function listUsers() {
 
     $output = '<ul>';
     foreach ($user as $key => $value) {
+      if ($key === 'id' || $key === 'uid') continue;
+      if ($type === 'teacher' && $key === 'subject_id') continue;
       $output .= '<li><strong>' . ucfirst($key) . ':</strong> ' . $value . '</li>';
     }
     $output .= '</ul>';
 
     return [
-      '#type' => 'markup',
-      '#markup' => $output,
+      '#type' => 'container',
+      'output' => [
+        '#markup' => $output,
+      ],
+      'back' => [
+        '#type' => 'link',
+        '#title' => 'Nazad',
+        '#url' => Url::fromRoute('elektronski_dnevnik.admin_users_controller'),
+        '#attributes' => [
+          'class' => ['button'],
+          'style' => 'margin-top:15px;display:inline-block;',
+        ],
+      ],
     ];
-  }
-
-  public function deleteUser($type, $id) {
-    $connection = \Drupal::database();
-    $table = null;
-
-    switch ($type) {
-      case 'student':
-        $table = 'students';
-        $id_field = 'id';
-        break;
-      case 'teacher':
-        $table = 'teachers';
-        $id_field = 'id';
-        break;
-      case 'admin':
-        $table = 'users_field_data';
-        $id_field = 'uid';
-        break;
-      default:
-        return ['#markup' => 'Nepoznat tip korisnika.'];
-    }
-
-    $user = $connection->select($table, 'u')
-      ->fields('u', ['ime', 'prezime'])
-      ->condition($id_field, $id)
-      ->execute()
-      ->fetchAssoc();
-
-    if (!$user) {
-      return ['#markup' => 'Korisnik nije pronađen.'];
-    }
-
-    $confirm_url = Url::fromRoute('elektronski_dnevnik.user_delete_confirmed', [
-      'type' => $type,
-      'id' => $id,
-    ])->toString();
-
-    $cancel_url = Url::fromRoute('elektronski_dnevnik.user_info')->toString();
-
-    $markup = "<p>Da li ste sigurni da želite da obrišete korisnika <strong>{$user['ime']} {$user['prezime']}</strong>?</p>";
-    $markup .= "<a href=\"$confirm_url\" style=\"margin-right: 10px; color: red; font-weight: bold;\">Da, obriši</a>";
-    $markup .= "<a href=\"$cancel_url\">Ne, nazad</a>";
-
-    return [
-      '#type' => 'markup',
-      '#markup' => $markup,
-    ];
-  }
-
-  public function deleteUserConfirmed($type, $id) {
-    $connection = \Drupal::database();
-    $table = null;
-
-    switch ($type) {
-      case 'student':
-        $table = 'students';
-        $id_field = 'id';
-        break;
-      case 'teacher':
-        $table = 'teachers';
-        $id_field = 'id';
-        break;
-      case 'admin':
-        $table = 'users_field_data';
-        $id_field = 'uid';
-        break;
-      default:
-        \Drupal::messenger()->addError('Nepoznat tip korisnika.');
-        return $this->redirect('elektronski_dnevnik.user_info');
-    }
-
-    try {
-      $connection->delete($table)
-        ->condition($id_field, $id)
-        ->execute();
-      \Drupal::messenger()->addMessage('Korisnik je uspešno obrisan.');
-    } catch (\Exception $e) {
-      \Drupal::messenger()->addError('Korisnik ne može biti obrisan zbog povezanih podataka.');
-    }
-
-    return $this->redirect('elektronski_dnevnik.user_info');
   }
 
   private function buildActionLinks($type, $id) {
@@ -264,7 +149,7 @@ public function listUsers() {
         '#title' => $this->t('Izmeni'),
         '#url' => $edit_url,
         '#attributes' => [
-          'style' => $button_style . 'background-color:#f39c12;', // narandžasto
+          'style' => $button_style . 'background-color:#f39c12;',
         ],
       ],
       'delete' => [

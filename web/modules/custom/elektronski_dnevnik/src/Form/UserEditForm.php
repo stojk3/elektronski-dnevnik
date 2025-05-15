@@ -6,22 +6,19 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\user\Entity\User;
 
 class UserEditForm extends FormBase {
 
   protected $database;
-  protected $requestStack;
 
-  public function __construct(Connection $database, RequestStack $request_stack) {
+  public function __construct(Connection $database) {
     $this->database = $database;
-    $this->requestStack = $request_stack;
   }
 
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('database'),
-      $container->get('request_stack')
+      $container->get('database')
     );
   }
 
@@ -29,92 +26,123 @@ class UserEditForm extends FormBase {
     return 'user_edit_form';
   }
 
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $request = $this->requestStack->getCurrentRequest();
-    $id = $request->get('id');
-    $name = $request->get('name');
-    $surname = $request->get('surname');
-
-    if (!is_numeric($id) && empty($name) && empty($surname)) {
-      return ['#markup' => 'Nevalidni podaci za pretragu.'];
+  public function buildForm(array $form, FormStateInterface $form_state, $type = NULL, $id = NULL) {
+    if (!$type || !$id) {
+      \Drupal::messenger()->addError('Nedostaju parametri za tip ili ID.');
+      return $form;
     }
 
-    $record = null;
-    $type = null;
+    $connection = \Drupal::database();
+    $user_data = NULL;
+    $user_uid = NULL;
+    $old_username = NULL;
 
-    // First, check the students table
-    $query = $this->database->select('students', 's')
-        ->fields('s');
-    if (!empty($id)) {
-      $query->condition('id', $id);
-    }
-    if (!empty($name)) {
-      $query->condition('ime', $name);
-    }
-    if (!empty($surname)) {
-      $query->condition('prezime', $surname);
-    }
-    $result = $query->execute()->fetchAssoc();
+    if ($type === 'student') {
+      $user_data = $connection->select('students', 's')
+        ->fields('s')
+        ->condition('id', $id)
+        ->execute()
+        ->fetchAssoc();
 
-    if ($result) {
-      $record = $result;
-      $type = 'student';
-    }
-
-    // If not found in students, check the teachers table
-    if (!$record) {
-      $query = $this->database->select('teachers', 't')
-        ->fields('t');
-      if (!empty($id)) {
-        $query->condition('id', $id);
-      }
-      if (!empty($name)) {
-        $query->condition('ime', $name);
-      }
-      if (!empty($surname)) {
-        $query->condition('prezime', $surname);
-      }
-      $result = $query->execute()->fetchAssoc();
-
-      if ($result) {
-        $record = $result;
-        $type = 'teacher';
+      if ($user_data && isset($user_data['username'])) {
+        $old_username = $user_data['username'];
+        $user_uid = $connection->select('users_field_data', 'u')
+          ->fields('u', ['uid'])
+          ->condition('name', $old_username)
+          ->execute()
+          ->fetchField();
       }
     }
+    elseif ($type === 'teacher') {
+      $user_data = $connection->select('teachers', 't')
+        ->fields('t')
+        ->condition('id', $id)
+        ->execute()
+        ->fetchAssoc();
 
-    // If not found in teachers, check the users field data (administrators)
-    if (!$record) {
-      $query = $this->database->select('users_field_data', 'u')
-        ->fields('u');
-      if (!empty($id)) {
-        $query->condition('uid', $id);  // Corrected to uid for the users table
-      }
-      if (!empty($name)) {
-        $query->condition('name', $name);
-      }
-      if (!empty($surname)) {
-        $query->condition('mail', $surname); // If surname is to be matched with email, this is fine
-      }
-      $result = $query->execute()->fetchAssoc();
-
-      if ($result) {
-        $record = $result;
-        $type = 'administrator';
+      if ($user_data && isset($user_data['username'])) {
+        $old_username = $user_data['username'];
+        $user_uid = $connection->select('users_field_data', 'u')
+          ->fields('u', ['uid'])
+          ->condition('name', $old_username)
+          ->execute()
+          ->fetchField();
       }
     }
-
-    if (!$record) {
-      return ['#markup' => 'Korisnik nije pronađen.'];
+    elseif ($type === 'admin') {
+      $user_data = $connection->select('users_field_data', 'u')
+        ->fields('u')
+        ->condition('uid', $id)
+        ->execute()
+        ->fetchAssoc();
+      $user_uid = $id;
+      $old_username = $user_data['name'] ?? NULL;
+    }
+    else {
+      \Drupal::messenger()->addError('Nepoznat tip korisnika.');
+      return $form;
     }
 
-    // Build form fields
-    foreach ($record as $key => $value) {
-      if ($key === 'id') continue;
-      $form[$key] = [
+    if (!$user_data) {
+      \Drupal::messenger()->addError('Korisnik nije pronađen u bazi.');
+      return $form;
+    }
+
+    $form['ime'] = [
+      '#type' => 'textfield',
+      '#title' => 'Ime',
+      '#default_value' => $user_data['ime'] ?? '',
+      '#required' => FALSE,
+    ];
+
+    $form['prezime'] = [
+      '#type' => 'textfield',
+      '#title' => 'Prezime',
+      '#default_value' => $user_data['prezime'] ?? '',
+      '#required' => FALSE,
+    ];
+
+    $form['email'] = [
+      '#type' => 'email',
+      '#title' => 'Email',
+      '#default_value' => $user_data['email'] ?? '',
+      '#required' => FALSE,
+    ];
+
+    $form['username'] = [
+      '#type' => 'textfield',
+      '#title' => 'Korisničko ime',
+      '#default_value' => $user_data['username'] ?? '',
+      '#required' => FALSE,
+    ];
+
+    $form['datum_rodjenja'] = [
+      '#type' => 'date',
+      '#title' => 'Datum rođenja',
+      '#default_value' => $user_data['datum_rodjenja'] ?? '',
+      '#required' => FALSE,
+    ];
+
+    $form['sifra'] = [
+      '#type' => 'textfield',
+      '#title' => 'Šifra',
+      '#default_value' => $user_data['sifra'] ?? '',
+      '#required' => FALSE,
+    ];
+
+    if ($type === 'student') {
+      $form['generacija'] = [
         '#type' => 'textfield',
-        '#title' => ucfirst(str_replace('_', ' ', $key)),
-        '#default_value' => $value,
-        '#required' => TRUE,
+        '#title' => 'Generacija',
+        '#default_value' => $user_data['generacija'] ?? '',
+      ];
+    }
+
+    if ($type === 'teacher') {
+      $form['predmet'] = [
+        '#type' => 'textfield',
+        '#title' => 'Predmet',
+        '#default_value' => $user_data['predmet'] ?? '',
       ];
     }
 
@@ -127,67 +155,134 @@ class UserEditForm extends FormBase {
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Sačuvaj izmene',
+      '#value' => 'Sačuvaj',
     ];
 
-    $form['record_id'] = [
-      '#type' => 'hidden',
-      '#value' => $id,
-    ];
-
-    $form['record_type'] = [
-      '#type' => 'hidden',
-      '#value' => $type,
-    ];
+    $form_state->set('user_type', $type);
+    $form_state->set('user_id', $id);
+    $form_state->set('user_uid', $user_uid);
+    $form_state->set('old_username', $old_username);
 
     return $form;
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $id = $form_state->getValue('record_id');
-    $type = $form_state->getValue('record_type');
+    $user_type = $form_state->get('user_type');
+    $id = $form_state->get('user_id');
+    $user_uid = $form_state->get('user_uid');
+    $old_username = $form_state->get('old_username');
+    $table = $this->getTableFromType($user_type);
 
-    switch ($type) {
-      case 'student':
-        $table = 'students';
-        $id_field = 'id';
-        break;
-      case 'teacher':
-        $table = 'teachers';
-        $id_field = 'id';
-        break;
-      case 'administrator':
-        $table = 'users_field_data';
-        $id_field = 'uid';
-        break;
-      default:
-        \Drupal::messenger()->addError('Nepoznat tip korisnika.');
-        return;
+    $new_username = $form_state->getValue('username');
+    $new_email = $form_state->getValue('email');
+    $new_password = $form_state->getValue('sifra');
+
+    if ($old_username) {
+      $user_row = $this->database->select('users_field_data', 'u')
+        ->fields('u', ['uid'])
+        ->condition('name', $old_username)
+        ->execute()
+        ->fetchAssoc();
+
+      if ($user_row && isset($user_row['uid'])) {
+        $update_fields = [];
+        if ($new_username !== NULL && $new_username !== '') {
+          $existing = $this->database->select('users_field_data', 'u')
+            ->fields('u', ['uid'])
+            ->condition('name', $new_username)
+            ->condition('uid', $user_row['uid'], '<>')
+            ->execute()
+            ->fetchField();
+          if ($existing) {
+            \Drupal::messenger()->addError('Korisničko ime već postoji u sistemu. Izaberite drugo korisničko ime.');
+            return;
+          }
+          $update_fields['name'] = $new_username;
+        }
+        if ($new_email !== NULL && $new_email !== '') {
+          $update_fields['mail'] = $new_email;
+        }
+        if (!empty($update_fields)) {
+          $this->database->update('users_field_data')
+            ->fields($update_fields)
+            ->condition('name', $old_username)
+            ->execute();
+        }
+        if ($new_password !== NULL && $new_password !== '') {
+          $user = User::load($user_row['uid']);
+          if ($user) {
+            $user->setPassword($new_password);
+            $user->save();
+          }
+        }
+      }
     }
 
-    // Get form field values
-    $fields = $form_state->getValues();
-    unset(
-      $fields['submit'],
-      $fields['form_build_id'],
-      $fields['form_token'],
-      $fields['form_id'],
-      $fields['record_id'],
-      $fields['record_type'],
-      $fields['op']
-    );
+    if ($user_type === 'student' || $user_type === 'teacher') {
+      $update_fields = [];
+      if ($new_username !== NULL && $new_username !== '') {
+        $update_fields['username'] = $new_username;
+      }
+      if ($new_email !== NULL && $new_email !== '') {
+        $update_fields['email'] = $new_email;
+      }
+      if ($new_password !== NULL && $new_password !== '') {
+        $update_fields['sifra'] = $new_password;
+      }
+      foreach (['ime', 'prezime', 'datum_rodjenja', 'generacija', 'predmet'] as $field) {
+        $val = $form_state->getValue($field);
+        if ($val !== NULL && $val !== '') {
+          $update_fields[$field] = $val;
+        }
+      }
+      if (!empty($update_fields) && $old_username) {
+        $this->database->update($table)
+          ->fields($update_fields)
+          ->condition('username', $old_username)
+          ->execute();
+      }
+    }
 
-    // Update database
-    $this->database->update($table)
-      ->fields($fields)
-      ->condition($id_field, $id)
-      ->execute();
+    if ($user_type === 'admin') {
+      $update_fields = [];
+      if ($new_username !== NULL && $new_username !== '') {
+        $update_fields['name'] = $new_username;
+      }
+      if ($new_email !== NULL && $new_email !== '') {
+        $update_fields['mail'] = $new_email;
+      }
+      if (!empty($update_fields)) {
+        $this->database->update('users_field_data')
+          ->fields($update_fields)
+          ->condition('uid', $id)
+          ->execute();
+      }
+      if ($new_password !== NULL && $new_password !== '') {
+        $user = User::load($id);
+        if ($user) {
+          $user->setPassword($new_password);
+          $user->save();
+        }
+      }
+    }
 
-    \Drupal::messenger()->addMessage("Uspešno izmenjen $type sa ID-em: $id.");
+    $this->messenger()->addStatus($this->t('Korisnik uspešno izmenjen.'));
   }
 
   public function backForm(array &$form, FormStateInterface $form_state) {
     $id = $form_state->getValue('record_id');
     $form_state->setRedirect('elektronski_dnevnik.admin_users_controller', ['id' => $id]);
+  }
+
+  private function getTableFromType($type) {
+    switch ($type) {
+      case 'student':
+        return 'students';
+      case 'teacher':
+        return 'teachers';
+      case 'admin':
+        return 'users_field_data';
+    }
+    return NULL;
   }
 }

@@ -66,8 +66,26 @@ class UserLoginForm extends FormBase {
     }
 
     $connection = Database::getConnection();
-    $tables = ['students', 'teachers'];
 
+    // Provera za users_field_data (admini)
+    $admin = $connection->select('users_field_data', 'u')
+      ->fields('u', ['uid', 'pass'])
+      ->condition('name', $username)
+      ->execute()
+      ->fetchAssoc();
+
+    if ($admin && \Drupal::service('password')->check($password, $admin['pass'])) {
+      // Ručno logovanje admina
+      $user = User::load($admin['uid']);
+      if ($user) {
+        user_login_finalize($user);
+        $this->messenger()->addStatus($this->t('Login successful.'));
+        $form_state->setRedirect('<front>');
+        return;
+      }
+    }
+
+    $tables = ['students', 'teachers'];
     foreach ($tables as $table) {
       $query = $connection->select($table, 'u')
         ->fields('u', ['id', 'sifra'])
@@ -75,9 +93,8 @@ class UserLoginForm extends FormBase {
         ->execute()
         ->fetchAssoc();
 
-        if ($query && $password === $query['sifra']) {
+      if ($query && $password === $query['sifra']) {
         \Drupal::messenger()->addMessage($this->t('Login successful!'));
-
         $response = new RedirectResponse('/pocetna');
         $response->send();
         return;

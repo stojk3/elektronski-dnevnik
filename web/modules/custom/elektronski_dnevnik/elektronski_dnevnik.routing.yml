@@ -156,24 +156,13 @@ elektronski_dnevnik.user_edit:
   requirements:
     _permission: 'administer site configuration'
     id: \d+
+    type: '[a-zA-Z_]+'
 
 elektronski_dnevnik.user_delete:
   path: '/admin-users/{type}/{id}/delete'
   defaults:
-    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::deleteUser'
+    _form: '\Drupal\elektronski_dnevnik\Form\UserDeleteConfirmForm'
     _title: 'Obriši korisnika'
-  options:
-    no_cache: 'TRUE'
-  requirements:
-    _permission: 'administer site configuration'
-    
-elektronski_dnevnik.user_delete_confirmed:
-  path: '/admin-users/{type}/{id}/obrisi-potvrda'
-  defaults:
-    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::deleteUserConfirmed'
-    _title: 'Potvrda brisanja korisnika'
-  options:
-    no_cache: 'TRUE'
   requirements:
     _permission: 'administer site configuration'
     id: \d+
