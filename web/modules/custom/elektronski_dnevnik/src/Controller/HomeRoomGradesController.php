@@ -112,7 +112,6 @@ class HomeRoomGradesController extends ControllerBase {
             }
         }
 
-        // Kombinovano sabira sve
         foreach ($grades_by_subject as $subject_id => &$entry) {
             $entry['3'] = array_merge($entry['1'], $entry['2']);
         }

@@ -88,6 +88,16 @@ elektronski_dnevnik.student_grade_controller:
   requirements:
     _custom_access: 'elektronski_dnevnik_student_access'
 
+elektronski_dnevnik.student_grades_controller:
+  path: '/student-grades-list'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\StudentGradesController2::viewGrades'
+    _title: 'Ispis ocena'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: 'elektronski_dnevnik_student_access'
+
 elektronski_dnevnik.student_activity_controller:
   path: '/student-activity'
   defaults:
