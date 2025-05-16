@@ -109,9 +109,6 @@
       {# Sidebar First #}
       {% if page.sidebar_first %}
         {% block sidebar_first %}
-          <aside class="col-sm-3" role="complementary">
-            {{ page.sidebar_first }}
-          </aside>
         {% endblock %}
       {% endif %}
 
@@ -150,9 +147,6 @@
       {# Sidebar Second #}
       {% if page.sidebar_second %}
         {% block sidebar_second %}
-          <aside class="col-sm-3" role="complementary">
-            {{ page.sidebar_second }}
-          </aside>
         {% endblock %}
       {% endif %}
     </div>
