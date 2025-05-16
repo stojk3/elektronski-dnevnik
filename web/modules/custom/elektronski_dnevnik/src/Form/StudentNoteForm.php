@@ -83,6 +83,7 @@ class StudentNoteForm extends FormBase {
         '#type' => 'select',
         '#title' => 'Učenici',
         '#options' => $student_options,
+        '#required' => TRUE,
       ];
     }
 
@@ -91,6 +92,7 @@ class StudentNoteForm extends FormBase {
       '#title' => 'Napomena',
       '#required' => TRUE,
       '#rows' => 4,
+      '#maxlength' => 255,
     ];
 
     $form['actions']['#type'] = 'actions';

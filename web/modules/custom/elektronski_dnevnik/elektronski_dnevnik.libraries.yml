@@ -1,0 +1,9 @@
+homeroom-note:
+  version: 1.x
+  css:
+    component:
+      css/elektronski_dnevnik-style.css: {}
+  js:
+    js/homeroom-note.js: {}
+  dependencies:
+    - core/jquery
