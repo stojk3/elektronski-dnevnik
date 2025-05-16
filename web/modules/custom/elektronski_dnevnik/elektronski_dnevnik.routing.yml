@@ -78,6 +78,26 @@ elektronski_dnevnik.student_note:
   requirements:
     _custom_access: 'elektronski_dnevnik_teacher_access'
 
+elektronski_dnevnik.student_note_controller:
+  path: '/student-notes'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\StudentNoteController::viewNotes'
+    _title: 'Ispis napomena'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: 'elektronski_dnevnik_student_access'
+
+elektronski_dnevnik.homeroom_note_controller:
+  path: '/homeroom-notes'
+  defaults:
+    _controller: '\Drupal\elektronski_dnevnik\Controller\HomeRoomNoteController::viewNotes'
+    _title: 'Ispis napomena'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: 'elektronski_dnevnik_teacher_access'
+
 elektronski_dnevnik.student_grade_controller:
   path: '/student-grades'
   defaults:
