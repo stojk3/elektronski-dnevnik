@@ -171,7 +171,7 @@ elektronski_dnevnik.admin_users_controller:
 elektronski_dnevnik.user_info:
   path: '/admin-users/{type}/{id}/info'
   defaults:
-    _controller: '\Drupal\elektronski_dnevnik\Controller\CustomUserController::infoUser'
+    _controller: '\Drupal\elektronski_dnevnik\Controller\UserInfoController::infoUser'
     _title: 'Informacije korisnika'
   options:
     no_cache: 'TRUE'

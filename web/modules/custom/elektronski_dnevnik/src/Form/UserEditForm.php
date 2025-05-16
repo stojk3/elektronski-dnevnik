@@ -267,6 +267,13 @@ class UserEditForm extends FormBase {
     }
 
     $this->messenger()->addStatus($this->t('Korisnik uspešno izmenjen.'));
+
+    $user_type = $form_state->get('user_type');
+    $user_id = $form_state->get('user_id');
+    $form_state->setRedirect('elektronski_dnevnik.user_info', [
+      'type' => $user_type,
+      'id' => $user_id,
+    ]);
   }
 
   public function backForm(array &$form, FormStateInterface $form_state) {
