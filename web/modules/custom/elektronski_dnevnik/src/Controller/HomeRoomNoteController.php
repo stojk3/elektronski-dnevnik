@@ -90,10 +90,19 @@ class HomeRoomNoteController extends ControllerBase {
                 ':id' => $note->predmet_id
             ])->fetchField();
 
+            $note_text = substr($note->napomena, 0, 50);
+            if (strlen($note->napomena) > 50) {
+                $note_text .= '...';
+            }
+
             $rows[] = [
                 'ucenik' => $student_name,
                 'predmet' => $subject_name,
-                'napomena' => $note->napomena,
+                'napomena' => [
+                    'data' => [
+                        '#markup' => '<div class="comment-column" data-full="' . $note->napomena . '">' . $note_text . '</div>',
+                    ],
+                ],
                 'datum' => date('d-m-Y', strtotime($note->datum_upisa)),
             ];
         }
@@ -105,14 +114,21 @@ class HomeRoomNoteController extends ControllerBase {
             'datum' => $this->t('Datum'),
         ];
 
-        return [
+        $build = [
             $form,
             [
                 '#type' => 'table',
                 '#header' => $header,
                 '#rows' => $rows,
                 '#empty' => $this->t('Nema zabeleženih napomena.'),
+                '#attached' => [
+                    'library' => [
+                        'elektronski_dnevnik/homeroom-note',
+                    ],
+                ],
             ],
         ];
+
+        return $build;
     }
 }

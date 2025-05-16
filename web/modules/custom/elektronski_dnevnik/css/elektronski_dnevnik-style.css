@@ -1,0 +1,19 @@
+
+    #tooltip {
+      position: fixed;
+      display: none;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 10px;
+      max-width: 300px;
+      z-index: 999;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      pointer-events: none;
+      font-size: 14px;
+    }
+
+    .note-cell {
+      background-color: #f0f8ff;
+      font-style: italic;
+      padding: 10px;
+    }
