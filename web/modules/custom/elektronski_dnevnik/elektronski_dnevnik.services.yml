@@ -1,0 +1,3 @@
+services:
+  elektronski_dnevnik.class_promotion_service:
+    class: 'Drupal\elektronski_dnevnik\Service\ClassPromotionService'

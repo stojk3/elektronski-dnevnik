@@ -1,0 +1,5 @@
+admin:
+  title: 'Promote Classes'
+  route_name: 'elektronski_dnevnik.promote_classes'
+  parent: 'system.admin_content'
+  description: 'Manage class promotions for the new school year.'

@@ -204,3 +204,11 @@ elektronski_dnevnik.homeroom_attendance_form:
     _title: 'Pregled izostanaka'
   requirements:
     _custom_access: 'elektronski_dnevnik_teacher_access'
+
+elektronski_dnevnik.promote_classes:
+    path: '/promote-classes'
+    defaults:
+      _form: '\Drupal\elektronski_dnevnik\Form\PromoteClassesForm'
+      _title: 'Promote Classes'
+    requirements:
+      _permission: 'administer site configuration'
