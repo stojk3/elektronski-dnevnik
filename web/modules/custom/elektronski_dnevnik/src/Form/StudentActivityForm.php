@@ -19,8 +19,7 @@ class StudentActivityForm extends FormBase {
       '#default_value' => date('Y-m-d', strtotime('+1 day')),
       '#required' => TRUE,
       '#min' => date('Y-m-d', strtotime('+1 day')),
-      '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
-    ];
+ '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],    ];
 
     $form['vrsta_aktivnosti'] = [
       '#type' => 'select',

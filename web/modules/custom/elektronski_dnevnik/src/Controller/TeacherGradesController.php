@@ -41,6 +41,7 @@ class TeacherGradesController extends ControllerBase {
             '#options' => $options,
             '#value' => $selected_department ?? '',
             '#attributes' => ['onchange' => 'this.form.submit();'],
+            '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
             '#name' => 'department',
          ],  
           'semester' => [
@@ -49,6 +50,7 @@ class TeacherGradesController extends ControllerBase {
               '#options' => $semester_options,
               '#value' => $selected_semester,
               '#attributes' => ['onchange' => 'this.form.submit();'],
+              '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
               '#name' => 'semester',
           ],
       ];      

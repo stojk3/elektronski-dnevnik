@@ -93,6 +93,7 @@ class UserEditForm extends FormBase {
       '#title' => 'Ime',
       '#default_value' => $user_data['ime'] ?? '',
       '#required' => FALSE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['prezime'] = [
@@ -100,6 +101,7 @@ class UserEditForm extends FormBase {
       '#title' => 'Prezime',
       '#default_value' => $user_data['prezime'] ?? '',
       '#required' => FALSE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['email'] = [
@@ -107,6 +109,7 @@ class UserEditForm extends FormBase {
       '#title' => 'Email',
       '#default_value' => $user_data['email'] ?? '',
       '#required' => FALSE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['username'] = [
@@ -114,6 +117,7 @@ class UserEditForm extends FormBase {
       '#title' => 'Korisničko ime',
       '#default_value' => $user_data['username'] ?? '',
       '#required' => FALSE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['datum_rodjenja'] = [
@@ -121,6 +125,7 @@ class UserEditForm extends FormBase {
       '#title' => 'Datum rođenja',
       '#default_value' => $user_data['datum_rodjenja'] ?? '',
       '#required' => FALSE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $form['sifra'] = [
@@ -128,6 +133,7 @@ class UserEditForm extends FormBase {
       '#title' => 'Šifra',
       '#default_value' => $user_data['sifra'] ?? '',
       '#required' => FALSE,
+      '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     if ($type === 'student') {
@@ -135,6 +141,7 @@ class UserEditForm extends FormBase {
         '#type' => 'textfield',
         '#title' => 'Generacija',
         '#default_value' => $user_data['generacija'] ?? '',
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
       ];
     }
 
@@ -143,6 +150,7 @@ class UserEditForm extends FormBase {
         '#type' => 'textfield',
         '#title' => 'Predmet',
         '#default_value' => $user_data['predmet'] ?? '',
+        '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
       ];
     }
 

@@ -24,8 +24,7 @@ class StudentGradeForm extends FormBase {
             '#disabled' => TRUE,
             '#hidden' => TRUE,
             '#required' => TRUE,
-            '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
-        ];
+ '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],        ];
 
         $query = $connection->select('teachers', 't')
             ->fields('t', ['subject_id'])
@@ -50,8 +49,7 @@ class StudentGradeForm extends FormBase {
                 '#title' => 'Predmet',
                 '#options' => $subjects,
                 '#required' => TRUE,
-                '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
-                '#ajax' => [
+ '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],                '#ajax' => [
                     'callback' => '::updateCombinedContainer',
                     'wrapper' => 'combined-container',
                 ],
@@ -70,8 +68,7 @@ class StudentGradeForm extends FormBase {
                 'aktivnost' => 'Aktivnost',
             ],
             '#required' => TRUE,
-            '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
-        ];
+ '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],        ];
 
         $departments_query = $connection->query("SELECT ime FROM {departments}")->fetchCol();
         $form['odeljenje'] = [
@@ -79,8 +76,7 @@ class StudentGradeForm extends FormBase {
             '#title' => 'Odeljenje',
             '#options' => array_combine($departments_query, $departments_query),
             '#required' => TRUE,
-            '#attributes' => ['style' => 'width: 850px; height: 40px; line-height: 38px; padding: 0 10px;'],
-            '#ajax' => [
+ '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],            '#ajax' => [
                 'callback' => '::updateCombinedContainer',
                 'wrapper' => 'combined-container',
             ],

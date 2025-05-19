@@ -47,6 +47,7 @@ class HomeRoomAttendanceForm extends FormBase {
         ],
         'definisano' => [
           '#type' => 'select',
+          '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
           '#options' => [
             'nedefinisano' => t('Nedefinisano'),
             'opravdano' => t('Opravdano'),
