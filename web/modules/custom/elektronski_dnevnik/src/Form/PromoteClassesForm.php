@@ -34,7 +34,7 @@ class PromoteClassesForm extends FormBase {
 
     $form['classes'] = [
       '#type' => 'checkboxes',
-      '#title' => $this->t('Select classes to promote'),
+      '#title' => $this->t('Izaberite odeljenje za pomeranje'),
       '#options' => $options,
       '#required' => TRUE,
     ];
@@ -45,7 +45,7 @@ class PromoteClassesForm extends FormBase {
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Promote Classes'),
+      '#value' => $this->t('Pomerite odeljenja'),
     ];
 
     return $form;
@@ -56,9 +56,9 @@ class PromoteClassesForm extends FormBase {
 
     if (!empty($selected_classes)) {
       $this->classPromotionService->promoteClasses(array_keys($selected_classes));
-      $this->messenger()->addStatus($this->t('Selected classes have been promoted.'));
+      $this->messenger()->addStatus($this->t('Izabrana odeljenja su pomerena.'));
     } else {
-      $this->messenger()->addError($this->t('No classes were selected for promotion.'));
+      $this->messenger()->addError($this->t('Niste izabrali nijedno odeljenje.'));
     }
   }
 }

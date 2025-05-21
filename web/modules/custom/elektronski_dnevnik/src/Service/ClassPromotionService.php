@@ -31,7 +31,6 @@ class ClassPromotionService {
 
         if ($department) {
         $ime = $department['ime'];
-        // Pretpostavljamo da je ime u formatu "I1", "II2", itd.
         if (preg_match('/^(I{1,3}|IV)(.+)$/', $ime, $matches)) {
             $trenutna = $matches[1];
             $ostatak = $matches[2];
