@@ -36,8 +36,10 @@ class StudentGradesController2 extends ControllerBase {
                     '2' => 'Drugo polugodište',
                 ],
                 '#value' => $selected_semester,
-                '#attributes' => ['onchange' => 'this.form.submit();'],
-                '#attributes' => ['style' => 'height: 40px; line-height: 38px; padding: 0 10px;'],
+                '#attributes' => [
+                    'onchange' => 'this.form.submit();',
+                    'style' => 'height: 40px; line-height: 38px; padding: 0 10px;',
+                ],
                 '#name' => 'semester',
             ],
         ];

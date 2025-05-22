@@ -35,7 +35,7 @@ class StudentClassForm extends FormBase {
       '#default_value' => $week_number,
       '#required' => TRUE,
       '#disabled' => TRUE,
-       '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],
     ];
 
     $current_user = \Drupal::currentUser();
@@ -66,7 +66,7 @@ class StudentClassForm extends FormBase {
         '#title' => 'Predmet',
         '#options' => $subjects,
         '#required' => TRUE,
- '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],        '#ajax' => [
+        '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],        '#ajax' => [
           'callback' => '::updateCombinedContainer',
           'wrapper' => 'combined-container',
         ],
@@ -84,7 +84,7 @@ class StudentClassForm extends FormBase {
       '#title' => 'Odeljenje',
       '#options' => array_combine($departments_query, $departments_query),
       '#required' => TRUE,
- '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],      '#ajax' => [
+      '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],      '#ajax' => [
         'callback' => '::updateCombinedContainer',
         'wrapper' => 'combined-container',
         'event' => 'change',
@@ -107,7 +107,7 @@ class StudentClassForm extends FormBase {
       '#title' => 'Redni broj časa',
       '#options' => $avaliable_classes,
       '#required' => TRUE,
- '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],    ];
+      '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],    ];
     
     $total_classes = $this->getTotalClassesForSubjectAndClass(
       $form_state->getValue('predmet'),
@@ -119,7 +119,7 @@ class StudentClassForm extends FormBase {
       '#title' => 'Ukupan broj časova',
       '#default_value' => $total_classes,
       '#required' => TRUE,
-       '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],
+      '#attributes' => ['style' => 'width: 1140px; height: 40px; line-height: 38px; padding: 0 10px;'],
       '#disabled' => TRUE,
     ];
 
