@@ -7,16 +7,16 @@ sleep 1
 fin up > /dev/null 2>&1
 echo "..."
 sleep 2
-#echo "[/] Dumping database..."
-#sleep 1
-#echo "..."
-#sleep 1
-#rm dbdump/dump.sql
-#fin drush sql:dump > dbdump/dump.sql
-#echo "..."
-#sleep 2
-#echo "[\] Dump completed!"
-#sleep 1
+echo "[/] Dumping database..."
+sleep 1
+echo "..."
+sleep 1
+rm dbdump/dump.sql
+fin drush sql:dump > dbdump/dump.sql
+echo "..."
+sleep 2
+echo "[\] Dump completed!"
+sleep 1
 echo "[/] Exporting config..."
 sleep 2
 echo "..."
